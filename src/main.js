@@ -10,7 +10,7 @@ Vue.config.productionTip = false
 Vue.use(Vuex)
 Vue.use(VueRouter)
 
-import Signup from './components/sign-up'
+import Signup from './components/sign-up.vue'
 
 const routes = [
   { path: '/', component: App },

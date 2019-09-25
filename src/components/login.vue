@@ -22,7 +22,7 @@
                                 @keyup.enter="login()"
                         ></v-text-field>
                         <br>
-                        <v-btn color="blue" style="color: white;" @click="login()"> Login </v-btn>
+                        <v-btn :disabled="!password || ! username" color="blue" style="color: white;" @click="login()"> Login </v-btn>
                         <br><br><br>
                         Don't have an account?
                         <br>
@@ -39,8 +39,8 @@
         name: "login",
         data: function() {
             return {
-                username: "",
-                password: ""
+                username: null,
+                password: null
             }
         },
         computed: {
@@ -63,7 +63,7 @@
                 this.$store.commit('setPassword', this.password)
             },
             signUp() {
-                this.$router.push({ path: '/sign-up' })
+                this.$router.push({ path: '/signup' })
                 this.$store.commit('setShowSignup', true)
             }
         }
