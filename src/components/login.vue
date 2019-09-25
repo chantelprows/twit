@@ -64,6 +64,7 @@
             },
             signUp() {
                 this.$router.push({ path: '/sign-up' })
+                this.$store.commit('setShowSignup', true)
             }
         }
     }

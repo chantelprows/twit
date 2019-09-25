@@ -6,7 +6,9 @@ Vue.use(Vuex)
 export const store = new Vuex.Store({
     state: {
         username: "",
-        password: ""
+        password: "",
+        loggedIn: false,
+        showSignup: false
     },
 
     getters: {
@@ -19,13 +21,20 @@ export const store = new Vuex.Store({
         },
         setPassword: (state, str) => {
             state.password = str
+        },
+        setLoggedIn: (state, bool) => {
+            state.loggedIn = bool
+        },
+        setShowSignup: (state, bool) => {
+            state.showSignup = bool
         }
     },
 
     actions: {
-        fetchLogin: ({state}) => {
+        fetchLogin: ({commit, state}) => {
             // login(state.username, state.password) LOGIN
             console.log(state.username, state.password)
+            commit('setLoggedIn', true)
         }
     }
 });
