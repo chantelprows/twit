@@ -8,7 +8,174 @@ export const store = new Vuex.Store({
         username: "",
         password: "",
         loggedIn: false,
-        showSignup: false
+        whichPage: "Login",
+        currentUser: {},
+        loginErr: false,
+        selectedUser: {},
+
+
+
+
+
+        //DUMMY DATA
+        allUsers: [
+            {
+                username: 'chantelprows',
+                name: 'Chantel Prows',
+                password: 'password',
+                picture: 'picture',
+                follows: [
+                    {
+                        username: 'brodyprows',
+                        name: 'Brody Prows',
+                        picture: 'picture'
+                    }
+                ],
+                followedBy: [
+                    {
+                        username: 'brodyprows',
+                        name: 'Brody Prows',
+                        picture: 'picture'
+                    }
+                ]
+            },
+            {
+                username: 'brodyprows',
+                name: 'Brody Prows',
+                password: 'password',
+                picture: 'picture',
+                follows: [
+                    {
+                        username: 'chantelprows',
+                        name: 'Chantel Prows',
+                        picture: 'picture'
+                    }
+                ],
+                followedBy: [
+                    {
+                        username: 'chantelprows',
+                        name: 'Chantel Prows',
+                        picture: 'picture'
+                    }
+                ]
+            }
+        ],
+        personalStatuses: [
+            {
+                status: "hello",
+                attatchment: null,
+                username: 'chantelprows',
+                name: 'Chantel Prows',
+                id: '11',
+                timeStamp: 1569616630947
+            },
+            {
+                status: "I am bored today",
+                attatchment: 'picture',
+                username: 'chantelprows',
+                name: 'Chantel Prows',
+                id: '11',
+                timeStamp: 1569616630947
+            }
+        ],
+        allStatuses: [
+            {
+                status: "hello",
+                attatchment: null,
+                username: 'chantelprows',
+                name: 'Chantel Prows',
+                id: '11',
+                timeStamp: 1569616630947
+            },
+            {
+                status: "I am bored today",
+                attatchment: 'picture',
+                username: 'chantelprows',
+                name: 'Chantel Prows',
+                id: '11',
+                timeStamp: 1569616630947
+            },
+            {
+                status: "sup",
+                attatchment: null,
+                username: 'brodyprows',
+                name: 'Brody Prows',
+                id: '1',
+                timeStamp: 1569616630947
+            },
+            {
+                status: "hey",
+                attatchment: null,
+                username: 'brodyprows',
+                name: 'Brody Prows',
+                id: '2',
+                timeStamp: 1569616630947
+            },
+            {
+                status: "hi",
+                attatchment: null,
+                username: 'brodyprows',
+                name: 'Brody Prows',
+                id: '3',
+                timeStamp: 1569616630947
+            },
+            {
+                status: "whats up",
+                attatchment: null,
+                username: 'brodyprows',
+                name: 'Brody Prows',
+                id: '4',
+                timeStamp: 1569616630947
+            },
+            {
+                status: "hola",
+                attatchment: null,
+                username: 'brodyprows',
+                name: 'Brody Prows',
+                id: '5',
+                timeStamp: 1569616630947
+            },
+            {
+                status: "i like chantel",
+                attatchment: null,
+                username: 'brodyprows',
+                name: 'Brody Prows',
+                id: '6',
+                timeStamp: 1569616630947
+            },
+            {
+                status: "school sux",
+                attatchment: null,
+                username: 'brodyprows',
+                name: 'Brody Prows',
+                id: '7',
+                timeStamp: 1569616630947
+            },
+            {
+                status: "provo sux",
+                attatchment: null,
+                username: 'brodyprows',
+                name: 'Brody Prows',
+                id: '8',
+                timeStamp: 1569616630947
+            },
+            {
+                status: "go byu!!!!!!!!",
+                attatchment: null,
+                username: 'brodyprows',
+                name: 'Brody Prows',
+                id: '9',
+                timeStamp: 1569616630947
+            },
+            {
+                status: "first tweet :)",
+                attatchment: null,
+                username: 'brodyprows',
+                name: 'Brody Prows',
+                id: '10',
+                timeStamp: 1569616630947
+            }
+        ]
     },
 
     getters: {
@@ -25,16 +192,70 @@ export const store = new Vuex.Store({
         setLoggedIn: (state, bool) => {
             state.loggedIn = bool
         },
-        setShowSignup: (state, bool) => {
-            state.showSignup = bool
+        setWhichPage: (state, str) => {
+            state.whichPage = str
+        },
+        setCurrentUser: (state, obj) => {
+            state.currentUser = obj
+        },
+        setSelectedUser: (state, obj) => {
+            state.selectedUser = obj
+        },
+        setLoginErr: (state, bool) => {
+            state.loginErr = bool
         }
     },
 
     actions: {
         fetchLogin: ({commit, state}) => {
             // login(state.username, state.password) LOGIN
-            console.log(state.username, state.password)
-            commit('setLoggedIn', true)
+
+            // for (let i = 0; i < state.allUsers.length; i++) {
+            //     if (state.allUsers[i].username === state.username && state.allUsers[i].password === state.password) {
+                    commit('setLoggedIn', true)
+                    commit('setWhichPage', 'Feed')
+                    commit('setLoginErr', false)
+            //         break;
+            //     }
+            // }
+            // if (!state.loggedIn) {
+            //     commit('setLoginErr', true)
+            // }
+            commit('setCurrentUser', state.allUsers[0])
+            commit('setSelectedUser', state.allUsers[0])
+        },
+        createUser: ({commit, state}, user) => {
+            //createUser
+
+            let uniqueUser = true
+            for (let i = 0; i < state.allUsers.length; i++) {
+                if (state.allUsers[i].username === user.username) {
+                    commit('setLoginErr', true)
+                    uniqueUser = false
+                    break;
+                }
+            }
+            if (uniqueUser) {
+                commit('setCurrentUser', user)
+                commit('setLoggedIn', true)
+                commit('setWhichPage', 'Feed')
+                commit('setLoginErr', false)
+            }
+        },
+        unfollow: ({commit, state}) => {
+            for (let i = 0; i < state.currentUser.follows; i++) {
+                if (state.currentUser.follows[i].username === state.selectedUser.username) {
+                    state.currentUser.follows.splice(i, 1)
+                }
+            }
+        },
+        follow: ({commit, state}, obj) => {
+            state.currentUser.follows.push(state.selectedUser)
+        },
+        addStatus: ({commit, state}, obj) => {
+            console.log(obj)
+            state.allStatuses.push(obj)
+            state.personalStatuses.push(obj)
         }
     }
 });

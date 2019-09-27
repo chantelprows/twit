@@ -1,5 +1,5 @@
 <template>
-    <v-app>
+    <section style="padding-top: 10%;">
         <v-container bg fill-height grid-list-md text-xs-center>
             <v-layout row wrap justify-center align-center>
                 <v-flex>
@@ -22,7 +22,8 @@
                                 @keyup.enter="login()"
                         ></v-text-field>
                         <br>
-                        <v-btn :disabled="!password || ! username" color="blue" style="color: white;" @click="login()"> Login </v-btn>
+                        <v-btn :disabled="!password || !username" color="blue" style="color: white;" @click="login()"> Login </v-btn>
+                        <div v-if="loginErr" style="color: red"> Incorrect Username or Password </div>
                         <br><br><br>
                         Don't have an account?
                         <br>
@@ -31,7 +32,7 @@
                 </v-flex>
             </v-layout>
         </v-container>
-    </v-app>
+    </section>
 </template>
 
 <script>
@@ -44,8 +45,8 @@
             }
         },
         computed: {
-            userName() {
-                return this.$store.state.username
+            loginErr() {
+                return this.$store.state.loginErr
             }
         },
         methods: {
@@ -63,18 +64,12 @@
                 this.$store.commit('setPassword', this.password)
             },
             signUp() {
-                this.$router.push({ path: '/signup' })
-                this.$store.commit('setShowSignup', true)
+                this.$store.commit('setWhichPage', 'Signup')
             }
         }
     }
 </script>
 
 <style scoped>
-
-    .center {
-        margin: auto;
-        width: 50%;
-    }
 
 </style>
