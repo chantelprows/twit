@@ -33,7 +33,7 @@
                 :rules="rules"
                 style="padding-left: 40%; padding-right: 40%;"
                 v-model="picture"
-        ></v-file-input>
+            ></v-file-input>
             <br>
             <v-btn color="blue" style="color: white; margin-top: 2px;" :disabled="disabled()" @click="signUp()"> Sign Up </v-btn>
             <br>
@@ -70,7 +70,7 @@
                     name: this.name,
                     username: this.username,
                     password: this.password,
-                    picture: this.picture
+                    picture: URL.createObjectURL(this.picture)
                 }
                 this.$store.dispatch('createUser', user)
             }

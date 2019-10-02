@@ -70,6 +70,9 @@ export default {
     methods: {
         setPage(str) {
             this.$store.commit('setWhichPage', str)
+            if (str === 'Story') {
+                this.$store.commit('setSelectedUser', this.$store.state.currentUser)
+            }
         },
         logout() {
             this.setPage("Login")

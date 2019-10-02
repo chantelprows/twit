@@ -12,6 +12,7 @@ export const store = new Vuex.Store({
         currentUser: {},
         loginErr: false,
         selectedUser: {},
+        showFollow: false,
 
 
 
@@ -23,19 +24,19 @@ export const store = new Vuex.Store({
                 username: 'chantelprows',
                 name: 'Chantel Prows',
                 password: 'password',
-                picture: 'picture',
+                picture: 'https://picsum.photos/510/300?random',
                 follows: [
                     {
                         username: 'brodyprows',
                         name: 'Brody Prows',
-                        picture: 'picture'
+                        picture: 'https://picsum.photos/510/300?random'
                     }
                 ],
                 followedBy: [
                     {
                         username: 'brodyprows',
                         name: 'Brody Prows',
-                        picture: 'picture'
+                        picture: 'https://picsum.photos/510/300?random'
                     }
                 ]
             },
@@ -43,19 +44,19 @@ export const store = new Vuex.Store({
                 username: 'brodyprows',
                 name: 'Brody Prows',
                 password: 'password',
-                picture: 'picture',
+                picture: 'https://picsum.photos/510/300?random',
                 follows: [
                     {
                         username: 'chantelprows',
                         name: 'Chantel Prows',
-                        picture: 'picture'
+                        picture: 'https://picsum.photos/510/300?random'
                     }
                 ],
                 followedBy: [
                     {
                         username: 'chantelprows',
                         name: 'Chantel Prows',
-                        picture: 'picture'
+                        picture: 'https://picsum.photos/510/300?random'
                     }
                 ]
             }
@@ -203,6 +204,9 @@ export const store = new Vuex.Store({
         },
         setLoginErr: (state, bool) => {
             state.loginErr = bool
+        },
+        setShowFollow: (state, bool) => {
+            state.showFollow = bool
         }
     },
 
