@@ -252,7 +252,6 @@ export const store = new Vuex.Store({
             user.follows = []
             user.followedBy = []
             if (uniqueUser) {
-                commit('setAllStatuses', [])
                 commit('setCurrentUser', user)
                 commit('setSelectedUser', user)
                 commit('setLoggedIn', true)

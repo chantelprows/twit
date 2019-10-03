@@ -13,7 +13,7 @@
                     </div>
                     <div>
                         <div v-html="formatHtml(status.status)" ref="mydiv"> </div>
-                        <div @click="viewStatus(status)" style="height: 10px; cursor: pointer;"></div>
+                        <div @click="viewStatus(status)" style="height: 10px; width: 100%; cursor: pointer;"></div>
                         <div v-if="status.attachment" @click="viewStatus(status)" style="cursor: pointer;">
                             <br>
                             <img :src="status.attachment" style="width: 100px; height: auto; margin-right: 10px;">
@@ -26,6 +26,7 @@
         <div v-if="moreToShow()">
             <v-btn color="#2196F3" style="color: white;" @click="loadMore()"> Load More </v-btn>
         </div>
+        <br>
         <individual-status v-if="showStatus" :config="curStatus"></individual-status>
     </section>
 </template>
