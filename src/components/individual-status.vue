@@ -15,9 +15,9 @@
                     </div>
                 </div>
                 <br>
-                <div style="padding-left: 20px;" v-html="status.status"></div>
+                <div style="padding-left: 20px;" v-html="formatHtml(status.status)" ref="indStat"></div>
                 <br>
-                <img v-if="status.attachment" :src="status.attachment" style="width: 50px; height: auto; margin-left: 20px;">
+                <img v-if="status.attachment" :src="status.attachment" style="width: 200px; height: auto; margin-left: 20px;">
                 <br><br v-if="status.attachment">
                 <v-btn color="#2196F3" style="color: white; margin-left: 20px; margin-bottom: 10px;" @click="close()"> Close </v-btn>
             </v-card>
@@ -56,6 +56,73 @@
                 }
                 this.$store.commit('setWhichPage', "Story")
                 this.$store.commit('setShowStatus', false)
+            },
+            formatHtml(status) {
+                let innerHTML = '<div>'
+                for (let i = 0; i < status.length; i++) {
+                    if (status.charAt(i) === '@') {
+                        let mention = ' '
+                        while (status.charAt(i) !== ' ' && i < status.length) {
+                            mention += status.charAt(i)
+                            i++;
+                        }
+                        innerHTML += "<a href='' style='text-decoration: none;'>" + mention + "</a>"
+                        innerHTML += ' '
+                    }
+                    else if (status.charAt(i) === '#') {
+                        let hashtag = ' '
+                        while (status.charAt(i) !== ' ' && i < status.length) {
+                            hashtag += status.charAt(i)
+                            i++;
+                        }
+
+                        innerHTML += "<a href='' style='text-decoration: none;'>" + hashtag + "</a>"
+                        innerHTML += ' '
+                    }
+                    else {
+                        innerHTML += status.charAt(i)
+                    }
+                }
+                innerHTML += "</div>"
+                return innerHTML
+            },
+            goToHashtag(hashtag) {
+                let cut = hashtag.substr(1)
+                this.$store.commit('setSelectedHashtag', cut)
+                this.$store.commit('setShowStatus', false)
+                this.$store.commit('setWhichPage', 'Explore')
+            },
+            goToStory(mention) {
+                let cut = mention.substr(2)
+                for (let i = 0; i < this.allUsers.length; i++) {
+                    if (cut === this.allUsers[i].username) {
+                        this.$store.commit("setSelectedUser", this.allUsers[i])
+                    }
+                }
+                this.$store.commit('setWhichPage', "Story")
+            }
+        },
+        mounted() {
+            console.log(this.$refs['indStat'])
+            let self = this
+            let div = this.$refs['indStat']
+            if (div.childNodes && div.childNodes[0] && div.childNodes[0].childNodes[1]) {
+                let ogList = div.childNodes[0].childNodes
+
+                for (let j = 0; j < ogList.length; j++) {
+                    if (ogList[j].localName === "a") {
+                        ogList[j].addEventListener('click', function (event) {
+                            event.preventDefault()
+                            let item =  event.target.childNodes[0].data
+                            if (item.toString().charAt(1) === '#') {
+                                self.goToHashtag(item)
+                            }
+                            else {
+                                self.goToStory(item)
+                            }
+                        })
+                    }
+                }
             }
         }
     }

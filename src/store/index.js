@@ -14,6 +14,7 @@ export const store = new Vuex.Store({
         selectedUser: {},
         showFollow: false,
         showStatus: false,
+        selectedHashtag: '',
 
 
 
@@ -62,29 +63,9 @@ export const store = new Vuex.Store({
                 ]
             }
         ],
-        // personalStatuses: [
-        //     {
-        //         status: "hello",
-        //         attatchment: null,
-        //         username: 'chantelprows',
-        //         name: 'Chantel Prows',
-        //         id: '11',
-        //         timeStamp: 1569616630947,
-        //         image: 'https://picsum.photos/510/300?random'
-        //     },
-        //     {
-        //         status: "I am bored today",
-        //         attatchment: 'picture',
-        //         username: 'chantelprows',
-        //         name: 'Chantel Prows',
-        //         id: '11',
-        //         timeStamp: 1569616630947,
-        //         image: 'https://picsum.photos/510/300?random'
-        //     }
-        // ],
         allStatuses: [
             {
-                status: "hello",
+                status: "hello @brodyprows",
                 attachment: null,
                 username: 'chantelprows',
                 name: 'Chantel Prows',
@@ -100,7 +81,7 @@ export const store = new Vuex.Store({
                 id: '12',
                 timeStamp: 1569616630947,
                 image: 'https://picsum.photos/510/300?random',
-                hashtag: "nbd"
+                hashtags: ["#nbd"]
             },
             {
                 status: "sup #nbd",
@@ -110,7 +91,7 @@ export const store = new Vuex.Store({
                 id: '1',
                 timeStamp: 1569616630947,
                 image: 'https://picsum.photos/510/300?random',
-                hashtag: '#nbd'
+                hashtags: ['#nbd']
             },
             {
                 status: "hey",
@@ -185,13 +166,14 @@ export const store = new Vuex.Store({
                 image: 'https://picsum.photos/510/300?random'
             },
             {
-                status: "i love #baseball :)",
+                status: "i love #baseball go #angels :)",
                 attachment: null,
                 username: 'brodyprows',
                 name: 'Brody Prows',
                 id: '10',
                 timeStamp: 1569616630947,
-                image: 'https://picsum.photos/510/300?random'
+                image: 'https://picsum.photos/510/300?random',
+                hashtags: ['#baseball', '#angels']
             }
         ]
     },
@@ -229,6 +211,9 @@ export const store = new Vuex.Store({
         },
         setShowStatus: (state, bool) => {
             state.showStatus = bool
+        },
+        setSelectedHashtag: (state, str) => {
+            state.selectedHashtag = str
         }
     },
 
@@ -236,19 +221,21 @@ export const store = new Vuex.Store({
         fetchLogin: ({commit, state}) => {
             // login(state.username, state.password) LOGIN
 
-            // for (let i = 0; i < state.allUsers.length; i++) {
-            //     if (state.allUsers[i].username === state.username && state.allUsers[i].password === state.password) {
+            for (let i = 0; i < state.allUsers.length; i++) {
+                if (state.allUsers[i].username === state.username && state.allUsers[i].password === state.password) {
                     commit('setLoggedIn', true)
                     commit('setWhichPage', 'Feed')
                     commit('setLoginErr', false)
-            //         break;
-            //     }
-            // }
-            // if (!state.loggedIn) {
-            //     commit('setLoginErr', true)
-            // }
-            commit('setCurrentUser', state.allUsers[0])
-            commit('setSelectedUser', state.allUsers[0])
+                    commit('setCurrentUser', state.allUsers[i])
+                    commit('setSelectedUser', state.allUsers[i])
+                    break;
+                }
+            }
+            if (!state.loggedIn) {
+                commit('setLoginErr', true)
+            }
+            // commit('setCurrentUser', state.allUsers[0])
+            // commit('setSelectedUser', state.allUsers[0])
         },
         createUser: ({commit, state}, user) => {
             //createUser

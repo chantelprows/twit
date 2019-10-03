@@ -1,6 +1,6 @@
 <template>
     <section>
-        <div v-for="status in statusList" class="status">
+        <div v-for="(status, i) in statusList" class="status" v-show="pageNum > i">
             <div style="display: flex;">
                 <img :src="status.image" style="width: 50px; height: 50px; margin-right: 10px;">
                 <div>
@@ -12,10 +12,11 @@
                         </v-icon>
                     </div>
                     <div>
-                        <div v-html="formatHtml(status.status)"> </div>
-                        <div v-if="status.attachment">
+                        <div v-html="formatHtml(status.status)" ref="mydiv"> </div>
+                        <div @click="viewStatus(status)" style="height: 10px; cursor: pointer;"></div>
+                        <div v-if="status.attachment" @click="viewStatus(status)" style="cursor: pointer;">
                             <br>
-                            <img :src="status.attachment" style="width: 50px; height: auto; margin-right: 10px;">
+                            <img :src="status.attachment" style="width: 100px; height: auto; margin-right: 10px;">
                         </div>
                     </div>
                 </div>
@@ -23,9 +24,9 @@
         </div>
         <br>
         <div v-if="moreToShow()">
-            <v-btn color="#2196F3" style="color: white;" @click="pageNum = pageNum + 5"> Load More </v-btn>
+            <v-btn color="#2196F3" style="color: white;" @click="loadMore()"> Load More </v-btn>
         </div>
-        <individual-status :config="curStatus"></individual-status>
+        <individual-status v-if="showStatus" :config="curStatus"></individual-status>
     </section>
 </template>
 
@@ -48,13 +49,21 @@
         },
         computed: {
             statusList() {
-                if (this.config.length > this.pageNum) {
-                    return this.config.slice(0, this.pageNum)
-                }
+                // if (this.config.length > this.pageNum) {
+                //     return this.config.slice(0, this.pageNum)
+                // }
+                // else {
+                //     this.pageNum = this.config.length
+                //     return this.config
+                // }
                 return this.config
+
             },
             allUsers() {
                 return this.$store.state.allUsers
+            },
+            showStatus() {
+                return this.$store.state.showStatus
             }
         },
         methods: {
@@ -80,11 +89,27 @@
                 this.$store.commit('setWhichPage', "Story")
                 this.$store.commit('setShowStatus', false)
             },
+            loadMore() {
+                if (this.pageNum + 5 > this.config.length) {
+                    this.pageNum = this.config.length
+                }
+                else {
+                    this.pageNum = this.pageNum + 5
+                }
+            },
             goToHashtag(hashtag) {
-                console.log("REACHED ", hashtag)
+                let cut = hashtag.substr(1)
+                this.$store.commit('setSelectedHashtag', cut)
+                this.$store.commit('setWhichPage', 'Explore')
             },
             goToStory(mention) {
-                console.log("REACHED ", mention)
+                let cut = mention.substr(2)
+                for (let i = 0; i < this.allUsers.length; i++) {
+                    if (cut === this.allUsers[i].username) {
+                        this.$store.commit("setSelectedUser", this.allUsers[i])
+                    }
+                }
+                this.$store.commit('setWhichPage', "Story")
             },
             formatHtml(status) {
                 let innerHTML = '<div>'
@@ -95,7 +120,7 @@
                             mention += status.charAt(i)
                             i++;
                         }
-                        innerHTML += "<a @click='goToStory(mention)'>" + mention + "</a>"
+                        innerHTML += "<a href='' style='text-decoration: none;'>" + mention + "</a>"
                         innerHTML += ' '
                     }
                     else if (status.charAt(i) === '#') {
@@ -105,7 +130,7 @@
                             i++;
                         }
 
-                        innerHTML += "<a @click='goToHashtag(hashtag)'>" + hashtag + "</a>"
+                        innerHTML += "<a href='' style='text-decoration: none;'>" + hashtag + "</a>"
                         innerHTML += ' '
                     }
                     else {
@@ -114,6 +139,33 @@
                 }
                 innerHTML += "</div>"
                 return innerHTML
+            }
+        },
+        mounted() {
+            console.log(this.$refs['mydiv'])
+            let self = this
+            let divList = this.$refs['mydiv']
+            if (divList) {
+                for (let i = 0; i < divList.length; i++) {
+                    if (divList[i].childNodes && divList[i].childNodes[0] && divList[i].childNodes[0].childNodes[1]) {
+                        let ogList = this.$refs['mydiv'][i].childNodes[0].childNodes
+
+                        for (let j = 0; j < ogList.length; j++) {
+                            if (ogList[j].localName === "a") {
+                                ogList[j].addEventListener('click', function (event) {
+                                    event.preventDefault()
+                                    let item =  event.target.childNodes[0].data
+                                    if (item.toString().charAt(1) === '#') {
+                                        self.goToHashtag(item)
+                                    }
+                                    else {
+                                        self.goToStory(item)
+                                    }
+                                })
+                            }
+                        }
+                    }
+                }
             }
         }
     }
@@ -124,7 +176,7 @@
     .status {
         padding-top: 20px;
         padding-bottom: 20px;
-        cursor: pointer;
+        /*cursor: pointer;*/
         padding-left: 10px;
         padding-right: 10px;
         border: 1px solid aliceblue;

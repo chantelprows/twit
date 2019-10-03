@@ -33,7 +33,7 @@
 </template>
 
 <script>
-    import AddStatus from "./addStatus"
+    import AddStatus from "./add-status"
     import FollowList from "./follow-list"
     import StatusList from "./status-list"
 

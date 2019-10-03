@@ -16,28 +16,63 @@
                     style="padding-right: 75%; padding-top: 10px;"
             ></v-text-field>
         </div>
-        <div style="padding-left: 20px;">
-            <h1> Users: </h1>
-            <div v-for="user in allUsers">
+        <div style="display: flex;">
+            <div style="padding-left: 20px;">
+                <h1> Users: </h1>
+                <div v-for="user in allUsers">
+                    <br>
+                    <div style="font-weight: bold">{{user.name}}</div>
+                    <div class="username" @click="changeUser(user)">@{{user.username}}</div>
+                </div>
+            </div>
+            <div style="padding-left: 25%; width: 70%">
+                <h2> {{hashtag}} </h2>
                 <br>
-                <div style="font-weight: bold">{{user.name}}</div>
-                <div class="username" @click="changeUser(user)">@{{user.username}}</div>
+                <status-list :config="showHashtag"></status-list>
             </div>
         </div>
     </section>
 </template>
 
 <script>
+    import StatusList from "./status-list"
+
     export default {
         name: "explore",
+        components: {StatusList},
         data: function() {
             return {
-                search: ''
+                search: '',
+                hashtag: ''
             }
         },
         computed: {
             allUsers() {
                 return this.$store.state.allUsers
+            },
+            selectedHashtag() {
+                return this.$store.state.selectedHashtag
+            },
+            allStatuses() {
+                return this.$store.state.allStatuses
+            },
+            showHashtag() {
+                let statusList = []
+                if (this.selectedHashtag) {
+                    for (let i = 0; i < this.allStatuses.length; i++) {
+                        if (this.allStatuses[i].hashtags) {
+                            let list = this.allStatuses[i].hashtags
+                            for (let j = 0; j < list.length; j++) {
+                                if (list[j] === this.selectedHashtag) {
+                                    statusList.push(this.allStatuses[i])
+                                }
+                            }
+                        }
+                    }
+                }
+                this.hashtag = this.selectedHashtag
+                this.$store.commit('setSelectedHashtag', null)
+                return statusList
             }
         },
         methods: {

@@ -62,12 +62,23 @@
                 let id = '_' + Math.random().toString(36).substr(2, 9)
                 let body = {
                     status: this.statusText,
-                    attatchment: this.attatchment,
+                    attachment: URL.createObjectURL(this.attachment),
                     username: this.currentUser.username,
                     name: this.currentUser.name,
                     id: id,
                     timeStamp: Date.now(),
                     image: this.currentUser.picture
+                }
+                for (let i = 0; i < this.statusText.length; i++) {
+                    if (this.statusText.charAt(i) === '#') {
+                        let hashtag = ''
+                        while (status.charAt(i) !== ' ' && i < status.length) {
+                            hashtag += status.charAt(i)
+                            i++;
+                        }
+                        body.hashtags = []
+                        body.hashtags.push(hashtag)
+                    }
                 }
                 this.$store.dispatch('addStatus', body)
                 this.statusText = ""
