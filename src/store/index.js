@@ -13,6 +13,7 @@ export const store = new Vuex.Store({
         loginErr: false,
         selectedUser: {},
         showFollow: false,
+        showStatus: false,
 
 
 
@@ -61,126 +62,144 @@ export const store = new Vuex.Store({
                 ]
             }
         ],
-        personalStatuses: [
-            {
-                status: "hello",
-                attatchment: null,
-                username: 'chantelprows',
-                name: 'Chantel Prows',
-                id: '11',
-                timeStamp: 1569616630947
-            },
-            {
-                status: "I am bored today",
-                attatchment: 'picture',
-                username: 'chantelprows',
-                name: 'Chantel Prows',
-                id: '11',
-                timeStamp: 1569616630947
-            }
-        ],
+        // personalStatuses: [
+        //     {
+        //         status: "hello",
+        //         attatchment: null,
+        //         username: 'chantelprows',
+        //         name: 'Chantel Prows',
+        //         id: '11',
+        //         timeStamp: 1569616630947,
+        //         image: 'https://picsum.photos/510/300?random'
+        //     },
+        //     {
+        //         status: "I am bored today",
+        //         attatchment: 'picture',
+        //         username: 'chantelprows',
+        //         name: 'Chantel Prows',
+        //         id: '11',
+        //         timeStamp: 1569616630947,
+        //         image: 'https://picsum.photos/510/300?random'
+        //     }
+        // ],
         allStatuses: [
             {
                 status: "hello",
-                attatchment: null,
+                attachment: null,
                 username: 'chantelprows',
                 name: 'Chantel Prows',
                 id: '11',
-                timeStamp: 1569616630947
+                timeStamp: 1569616630947,
+                image: 'https://picsum.photos/510/300?random'
             },
             {
-                status: "I am bored today",
-                attatchment: 'picture',
+                status: "I am bored today #nbd",
+                attachment: null,
                 username: 'chantelprows',
                 name: 'Chantel Prows',
-                id: '11',
-                timeStamp: 1569616630947
+                id: '12',
+                timeStamp: 1569616630947,
+                image: 'https://picsum.photos/510/300?random',
+                hashtag: "nbd"
             },
             {
-                status: "sup",
-                attatchment: null,
+                status: "sup #nbd",
+                attachment: null,
                 username: 'brodyprows',
                 name: 'Brody Prows',
                 id: '1',
-                timeStamp: 1569616630947
+                timeStamp: 1569616630947,
+                image: 'https://picsum.photos/510/300?random',
+                hashtag: '#nbd'
             },
             {
                 status: "hey",
-                attatchment: null,
+                attachment: null,
                 username: 'brodyprows',
                 name: 'Brody Prows',
                 id: '2',
-                timeStamp: 1569616630947
+                timeStamp: 1569616630947,
+                image: 'https://picsum.photos/510/300?random'
             },
             {
                 status: "hi",
-                attatchment: null,
+                attachment: null,
                 username: 'brodyprows',
                 name: 'Brody Prows',
                 id: '3',
-                timeStamp: 1569616630947
+                timeStamp: 1569616630947,
+                image: 'https://picsum.photos/510/300?random'
             },
             {
                 status: "whats up",
-                attatchment: null,
+                attachment: null,
                 username: 'brodyprows',
                 name: 'Brody Prows',
                 id: '4',
-                timeStamp: 1569616630947
+                timeStamp: 1569616630947,
+                image: 'https://picsum.photos/510/300?random'
             },
             {
                 status: "hola",
-                attatchment: null,
+                attachment: null,
                 username: 'brodyprows',
                 name: 'Brody Prows',
                 id: '5',
-                timeStamp: 1569616630947
+                timeStamp: 1569616630947,
+                image: 'https://picsum.photos/510/300?random'
             },
             {
                 status: "i like chantel",
-                attatchment: null,
+                attachment: null,
                 username: 'brodyprows',
                 name: 'Brody Prows',
                 id: '6',
-                timeStamp: 1569616630947
+                timeStamp: 1569616630947,
+                image: 'https://picsum.photos/510/300?random'
             },
             {
                 status: "school sux",
-                attatchment: null,
+                attachment: null,
                 username: 'brodyprows',
                 name: 'Brody Prows',
                 id: '7',
-                timeStamp: 1569616630947
+                timeStamp: 1569616630947,
+                image: 'https://picsum.photos/510/300?random'
             },
             {
-                status: "provo sux",
-                attatchment: null,
+                status: "my dog emoji I made",
+                attachment: 'https://image.flaticon.com/icons/svg/616/616408.svg',
                 username: 'brodyprows',
                 name: 'Brody Prows',
                 id: '8',
-                timeStamp: 1569616630947
+                timeStamp: 1569616630947,
+                image: 'https://picsum.photos/510/300?random'
             },
             {
                 status: "go byu!!!!!!!!",
-                attatchment: null,
+                attachment: null,
                 username: 'brodyprows',
                 name: 'Brody Prows',
                 id: '9',
-                timeStamp: 1569616630947
+                timeStamp: 1569616630947,
+                image: 'https://picsum.photos/510/300?random'
             },
             {
-                status: "first tweet :)",
-                attatchment: null,
+                status: "i love #baseball :)",
+                attachment: null,
                 username: 'brodyprows',
                 name: 'Brody Prows',
                 id: '10',
-                timeStamp: 1569616630947
+                timeStamp: 1569616630947,
+                image: 'https://picsum.photos/510/300?random'
             }
         ]
     },
 
     getters: {
-
+        getAllUsers: (state) => {
+            return state.allUsers
+        }
     },
 
     mutations: {
@@ -207,6 +226,9 @@ export const store = new Vuex.Store({
         },
         setShowFollow: (state, bool) => {
             state.showFollow = bool
+        },
+        setShowStatus: (state, bool) => {
+            state.showStatus = bool
         }
     },
 
@@ -247,19 +269,30 @@ export const store = new Vuex.Store({
             }
         },
         unfollow: ({commit, state}) => {
-            for (let i = 0; i < state.currentUser.follows; i++) {
+            for (let i = 0; i < state.currentUser.follows.length; i++) {
                 if (state.currentUser.follows[i].username === state.selectedUser.username) {
                     state.currentUser.follows.splice(i, 1)
+                    for (let j = 0; j < state.selectedUser.followedBy.length; j++) {
+                        if (state.selectedUser.followedBy[j].username === state.currentUser.username) {
+                            state.selectedUser.followedBy.splice(j, 1)
+                        }
+                    }
                 }
             }
         },
         follow: ({commit, state}, obj) => {
             state.currentUser.follows.push(state.selectedUser)
+            state.selectedUser.followedBy.push(state.currentUser)
         },
         addStatus: ({commit, state}, obj) => {
-            console.log(obj)
             state.allStatuses.push(obj)
-            state.personalStatuses.push(obj)
+        },
+        deleteStatus: ({commit, state}, obj) => {
+            for (let i = 0; i < state.allStatuses.length; i++) {
+                if (obj.id === state.allStatuses[i].id) {
+                    state.allStatuses.splice(i, 1)
+                }
+            }
         }
     }
 });

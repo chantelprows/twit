@@ -26,17 +26,20 @@
         </div>
         <br><br><br>
         <add-status style="padding-left: 25%; padding-right: 25%;"></add-status>
-        <follow-list :config="followList"></follow-list>
+        <br><br><br>
+        <status-list :config="statuses" style="padding-left: 25%; padding-right: 25%;"></status-list>
+        <follow-list v-if="showFollow" :config="followObj"></follow-list>
     </section>
 </template>
 
 <script>
     import AddStatus from "./addStatus"
     import FollowList from "./follow-list"
+    import StatusList from "./status-list"
 
     export default {
         name: "story",
-        components: {FollowList, AddStatus},
+        components: {FollowList, AddStatus, StatusList},
         data: function() {
             return {
                 picture: null,
@@ -44,7 +47,7 @@
                     //     value => !value || value.size < 2000000 || 'Photo size should be less than 2 MB!',
                 ],
                 addNew: false,
-                followList: []
+                followObj: {}
             }
         },
         computed: {
@@ -53,12 +56,25 @@
             },
             selectedUser() {
                 return this.$store.state.selectedUser
+            },
+            showFollow() {
+                return this.$store.state.showFollow
+            },
+            statuses() {
+                let statusList = []
+                let statuses = this.$store.state.allStatuses
+                for (let i = 0; i < statuses.length; i++) {
+                    if (statuses[i].username === this.selectedUser.username) {
+                        statusList.push(statuses[i])
+                    }
+                }
+                statusList = statusList.sort(function(a, b){ return a.timeStamp > b.timeStamp}).reverse()
+                return statusList
             }
         },
         methods: {
             followText() {
                 for (let i = 0; i < this.currentUser.follows.length; i++) {
-                    console.log(this.currentUser.follow)
                     if (this.currentUser.follows[i].username === this.selectedUser.username) {
                         return "Unfollow"
                     }
@@ -70,7 +86,7 @@
                 //return false
             },
             follow() {
-                if (this.followText === "Unfollow") {
+                if (this.followText() === "Unfollow") {
                     this.$store.dispatch('unfollow')
                 }
                 else {
@@ -90,13 +106,14 @@
                 return 'https://picsum.photos/510/300?random'
             },
             viewFollowers() {
-                this.followList = this.selectedUser.followedBy
+                this.followObj.followList = this.selectedUser.followedBy
+                this.followObj.followType = 'Followers'
                 this.$store.commit('setShowFollow', true)
             },
             viewFollowing() {
-                this.followList = this.selectedUser.follows
+                this.followObj.followList = this.selectedUser.follows
+                this.followObj.followType = 'Following'
                 this.$store.commit('setShowFollow', true)
-
             }
         }
     }

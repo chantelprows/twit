@@ -1,5 +1,5 @@
 <template>
-    <section>
+    <section v-if="currentUser.username === selectedUser.username">
         <div style="display: flex;">
             <v-text-field
                     label="Write a chirp. . ."
@@ -52,6 +52,9 @@
         computed: {
             currentUser() {
                 return this.$store.state.currentUser
+            },
+            selectedUser() {
+                return this.$store.state.selectedUser
             }
         },
         methods: {
@@ -63,7 +66,8 @@
                     username: this.currentUser.username,
                     name: this.currentUser.name,
                     id: id,
-                    timeStamp: Date.now()
+                    timeStamp: Date.now(),
+                    image: this.currentUser.picture
                 }
                 this.$store.dispatch('addStatus', body)
                 this.statusText = ""

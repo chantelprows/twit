@@ -29,6 +29,7 @@
       <signup v-if="whichPage === 'Signup'"></signup>
       <feed v-if="whichPage === 'Feed'"></feed>
       <story v-if="whichPage === 'Story'"></story>
+      <explore v-if="whichPage === 'Explore'"></explore>
     </div>
     </section>
   </v-app>
@@ -39,6 +40,7 @@ import Login from './components/login'
 import Signup from './components/sign-up'
 import Feed from './components/feed'
 import Story from './components/story'
+import Explore from './components/explore'
 
 export default {
     name: 'App',
@@ -46,7 +48,8 @@ export default {
         Story,
         Feed,
         Login,
-        Signup
+        Signup,
+        Explore
     },
     computed: {
         loggedIn() {

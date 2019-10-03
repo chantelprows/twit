@@ -1,5 +1,5 @@
 <template>
-    <section style="text-align: center;">
+    <section style="text-align: center; padding-top: 200px;">
         <div style="text-align: center">
             <v-text-field
                     label="Name"
