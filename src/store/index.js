@@ -179,9 +179,7 @@ export const store = new Vuex.Store({
     },
 
     getters: {
-        getAllUsers: (state) => {
-            return state.allUsers
-        }
+
     },
 
     mutations: {
@@ -214,6 +212,9 @@ export const store = new Vuex.Store({
         },
         setSelectedHashtag: (state, str) => {
             state.selectedHashtag = str
+        },
+        setAllStatuses: (state, arr) => {
+            state.allStatuses = arr
         }
     },
 
@@ -248,8 +249,12 @@ export const store = new Vuex.Store({
                     break;
                 }
             }
+            user.follows = []
+            user.followedBy = []
             if (uniqueUser) {
+                commit('setAllStatuses', [])
                 commit('setCurrentUser', user)
+                commit('setSelectedUser', user)
                 commit('setLoggedIn', true)
                 commit('setWhichPage', 'Feed')
                 commit('setLoginErr', false)

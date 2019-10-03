@@ -36,7 +36,7 @@
             ></v-file-input>
             <br>
             <v-btn color="blue" style="color: white; margin-top: 2px;" :disabled="disabled()" @click="signUp()"> Sign Up </v-btn>
-            <br>
+            <br><br>
             <div v-if="loginErr" style="color: red"> Username is already taken </div>
         </div>
     </section>

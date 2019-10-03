@@ -65,6 +65,7 @@
             },
             signUp() {
                 this.$store.commit('setWhichPage', 'Signup')
+                this.$store.commit('setLoginErr', false)
             }
         }
     }

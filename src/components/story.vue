@@ -3,7 +3,7 @@
         <div style="display: inline-flex;">
             <div style="display: block">
                 <v-img :src="urlGet()" height="120" width="120" style="margin-top: 20px;"></v-img>
-                <div style="font-style: italic;" class="cp" @click="addNew = true"> Change Picture </div>
+                <div  v-if="currentUser.username === selectedUser.username" style="font-style: italic;" class="cp" @click="addNew = true"> Change Picture </div>
                 <v-file-input
                         label="Profile Photo"
                         prepend-icon="mdi-camera"
@@ -20,12 +20,12 @@
                 <div style="display: flex;">
                     <div style="padding-left: 15px; padding-top: 3px; font-style: italic" class="cp" @click="viewFollowing()"> {{selectedUser.follows.length}} following </div>
                     <div style="padding-left: 15px; padding-top: 3px; font-style: italic" class="cp" @click="viewFollowers()"> {{selectedUser.followedBy.length}} followers </div>
-                    <v-btn v-if="!isSelf()" style="margin-left: 15px; color: white;" color="#2196F3" rounded @click="follow()"> {{followText()}} </v-btn>
+                    <v-btn v-if="!isSelf() && loggedIn" style="margin-left: 15px; color: white;" color="#2196F3" rounded @click="follow()"> {{followText()}} </v-btn>
                 </div>
             </div>
         </div>
         <br><br><br>
-        <add-status style="padding-left: 25%; padding-right: 25%;"></add-status>
+        <add-status style="padding-left: 25%; padding-right: 25%;" v-if="currentUser.username === selectedUser.username"></add-status>
         <br><br><br>
         <status-list :config="statuses" style="padding-left: 25%; padding-right: 25%;"></status-list>
         <follow-list v-if="showFollow" :config="followObj"></follow-list>
@@ -63,20 +63,29 @@
             statuses() {
                 let statusList = []
                 let statuses = this.$store.state.allStatuses
-                for (let i = 0; i < statuses.length; i++) {
-                    if (statuses[i].username === this.selectedUser.username) {
-                        statusList.push(statuses[i])
+                if (statuses) {
+                    for (let i = 0; i < statuses.length; i++) {
+                        if (statuses[i].username === this.selectedUser.username) {
+                            statusList.push(statuses[i])
+                        }
                     }
+                    statusList = statusList.sort(function (a, b) {
+                        return a.timeStamp > b.timeStamp
+                    }).reverse()
+                    return statusList
                 }
-                statusList = statusList.sort(function(a, b){ return a.timeStamp > b.timeStamp}).reverse()
-                return statusList
+            },
+            loggedIn() {
+                return this.$store.state.loggedIn
             }
         },
         methods: {
             followText() {
-                for (let i = 0; i < this.currentUser.follows.length; i++) {
-                    if (this.currentUser.follows[i].username === this.selectedUser.username) {
-                        return "Unfollow"
+                if (this.currentUser.follows) {
+                    for (let i = 0; i < this.currentUser.follows.length; i++) {
+                        if (this.currentUser.follows[i].username === this.selectedUser.username) {
+                            return "Unfollow"
+                        }
                     }
                 }
                 return "Follow"

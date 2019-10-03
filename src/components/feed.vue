@@ -16,8 +16,12 @@
         components: {StatusList, AddStatus},
         computed: {
             statusList() {
-                let sortedList = Array.from(this.$store.state.allStatuses)
-                return sortedList.sort(function(a, b){ return a.timeStamp > b.timeStamp}).reverse()
+                if(this.$store.state.allStatuses.length > 0) {
+                    let sortedList = Array.from(this.$store.state.allStatuses)
+                    return sortedList.sort(function (a, b) {
+                        return a.timeStamp > b.timeStamp
+                    }).reverse()
+                }
             }
         }
     }

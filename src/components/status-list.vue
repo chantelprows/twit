@@ -78,7 +78,9 @@
                 this.$store.dispatch('deleteStatus', status)
             },
             moreToShow() {
-                return this.config.length > this.pageNum
+                if (this.config) {
+                    return this.config.length > this.pageNum
+                }
             },
             changeUser(username) {
                 for (let i = 0; i < this.allUsers.length; i++) {

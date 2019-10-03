@@ -72,7 +72,9 @@
                 }
                 this.hashtag = this.selectedHashtag
                 this.$store.commit('setSelectedHashtag', null)
-                return statusList
+                return statusList.sort(function (a, b) {
+                    return a.timeStamp > b.timeStamp
+                }).reverse()
             }
         },
         methods: {

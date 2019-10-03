@@ -1,5 +1,5 @@
 <template>
-    <section v-if="currentUser.username === selectedUser.username">
+    <section>
         <div style="display: flex;">
             <v-text-field
                     label="Write a chirp. . ."
@@ -52,17 +52,21 @@
         computed: {
             currentUser() {
                 return this.$store.state.currentUser
-            },
-            selectedUser() {
-                return this.$store.state.selectedUser
             }
         },
         methods: {
             chirp() {
                 let id = '_' + Math.random().toString(36).substr(2, 9)
+                let attach
+                if (this.attachment) {
+                    attach = URL.createObjectURL(this.attachment)
+                }
+                else {
+                    attach = null
+                }
                 let body = {
                     status: this.statusText,
-                    attachment: URL.createObjectURL(this.attachment),
+                    attachment: attach,
                     username: this.currentUser.username,
                     name: this.currentUser.name,
                     id: id,
