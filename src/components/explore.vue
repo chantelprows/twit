@@ -18,7 +18,7 @@
         </div>
         <div style="display: flex;">
             <div style="padding-left: 20px;">
-                <h1> Users: </h1>
+<!--                <h1> Users: </h1>-->
                 <div v-for="user in allUsers">
                     <br>
                     <div style="font-weight: bold">{{user.name}}</div>
@@ -28,7 +28,7 @@
             <div style="padding-left: 25%; width: 70%">
                 <h2> {{hashtag}} </h2>
                 <br>
-                <status-list :config="showHashtag"></status-list>
+                <status-list :key="loadKey" v-if="allStatuses.length > 0" :config="showHashtag"></status-list>
             </div>
         </div>
     </section>
@@ -43,7 +43,13 @@
         data: function() {
             return {
                 search: '',
-                hashtag: ''
+                hashtag: '',
+                loadKey: 0
+            }
+        },
+        watch: {
+            allStatuses() {
+                this.loadKey++
             }
         },
         computed: {
@@ -57,24 +63,25 @@
                 return this.$store.state.allStatuses
             },
             showHashtag() {
-                let statusList = []
-                if (this.selectedHashtag) {
-                    for (let i = 0; i < this.allStatuses.length; i++) {
-                        if (this.allStatuses[i].hashtags) {
-                            let list = this.allStatuses[i].hashtags
-                            for (let j = 0; j < list.length; j++) {
-                                if (list[j] === this.selectedHashtag) {
-                                    statusList.push(this.allStatuses[i])
-                                }
-                            }
-                        }
-                    }
-                }
-                this.hashtag = this.selectedHashtag
-                this.$store.commit('setSelectedHashtag', null)
-                return statusList.sort(function (a, b) {
-                    return a.timeStamp > b.timeStamp
-                }).reverse()
+                // let statusList = []
+                // if (this.selectedHashtag) {
+                //     for (let i = 0; i < this.allStatuses.length; i++) {
+                //         if (this.allStatuses[i].hashtags) {
+                //             let list = this.allStatuses[i].hashtags
+                //             for (let j = 0; j < list.length; j++) {
+                //                 if (list[j] === this.selectedHashtag) {
+                //                     statusList.push(this.allStatuses[i])
+                //                 }
+                //             }
+                //         }
+                //     }
+                // }
+                // this.hashtag = this.selectedHashtag
+                // this.$store.commit('setSelectedHashtag', null)
+                // return statusList.sort(function (a, b) {
+                //     return a.timeStamp > b.timeStamp
+                // }).reverse()
+                return this.$store.state.allStatuses
             }
         },
         methods: {

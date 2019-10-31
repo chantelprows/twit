@@ -27,7 +27,7 @@
         <br><br><br>
         <add-status style="padding-left: 25%; padding-right: 25%;" v-if="currentUser.username === selectedUser.username"></add-status>
         <br><br><br>
-        <status-list :config="statuses" style="padding-left: 25%; padding-right: 25%;"></status-list>
+        <status-list :key="loadKey" v-if="statuses.length > 0" :config="statuses" style="padding-left: 25%; padding-right: 25%;"></status-list>
         <follow-list v-if="showFollow" :config="followObj"></follow-list>
     </section>
 </template>
@@ -47,7 +47,13 @@
                     //     value => !value || value.size < 2000000 || 'Photo size should be less than 2 MB!',
                 ],
                 addNew: false,
-                followObj: {}
+                followObj: {},
+                loadKey: 0
+            }
+        },
+        watch: {
+            statuses() {
+                this.loadKey++
             }
         },
         computed: {
@@ -61,19 +67,19 @@
                 return this.$store.state.showFollow
             },
             statuses() {
-                let statusList = []
-                let statuses = this.$store.state.allStatuses
-                if (statuses) {
-                    for (let i = 0; i < statuses.length; i++) {
-                        if (statuses[i].username === this.selectedUser.username) {
-                            statusList.push(statuses[i])
-                        }
-                    }
-                    statusList = statusList.sort(function (a, b) {
-                        return a.timeStamp > b.timeStamp
-                    }).reverse()
-                    return statusList
-                }
+                // let statusList = []
+                return this.$store.state.allStatuses
+                // if (statuses) {
+                //     for (let i = 0; i < statuses.length; i++) {
+                //         if (statuses[i].username === this.selectedUser.username) {
+                //             statusList.push(statuses[i])
+                //         }
+                //     }
+                //     statusList = statusList.sort(function (a, b) {
+                //         return a.timeStamp > b.timeStamp
+                //     }).reverse()
+                //     return statusList
+                // }
             },
             loggedIn() {
                 return this.$store.state.loggedIn
@@ -83,16 +89,23 @@
             },
             followedBy() {
                 return this.$store.state.followedBy
+            },
+            followRelationship() {
+                return this.$store.state.hasRelationship
             }
         },
         methods: {
             followText() {
-                if (this.currentUser.follows) {
-                    for (let i = 0; i < this.currentUser.follows.length; i++) {
-                        if (this.currentUser.follows[i].username === this.selectedUser.username) {
-                            return "Unfollow"
-                        }
-                    }
+                // if (this.currentUser.follows) {
+                //     for (let i = 0; i < this.currentUser.follows.length; i++) {
+                //         if (this.currentUser.follows[i].username === this.selectedUser.username) {
+                //             return "Unfollow"
+                //         }
+                //     }
+                // }
+                // return "Follow"
+                if (this.followRelationship) {  //uncomment when databse is updated
+                    return "Unfollow"
                 }
                 return "Follow"
             },
@@ -110,8 +123,7 @@
             },
             uploadPicture() {
                 this.addNew = false
-                //call API here
-                this.selectedUser.picture = URL.createObjectURL(this.picture)
+                this.$store.dispatch('changePhoto', URL.createObjectURL(this.picture))
                 this.picture = null
             },
             urlGet() {
@@ -130,6 +142,9 @@
                 this.followObj.followType = 'Following'
                 this.$store.commit('setShowFollow', true)
             }
+        },
+        mounted() {
+            this.$store.dispatch('getStory')
         }
     }
 </script>

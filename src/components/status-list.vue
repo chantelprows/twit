@@ -1,6 +1,6 @@
 <template>
     <section>
-        <div v-for="(status, i) in statusList" class="status" v-show="pageNum > i">
+        <div v-for="(status, i) in statusList" class="status">
             <div style="display: flex;">
                 <img :src="status.image" style="width: 50px; height: 50px; margin-right: 10px;">
                 <div>
@@ -79,7 +79,15 @@
             },
             moreToShow() {
                 if (this.config) {
-                    return this.config.length > this.pageNum
+                    if (this.$store.state.whichPage === "Feed") {
+                        return this.config.length < 11 //CHANGE TO BE BETTER
+                    }
+                    else if (this.$store.state.whichPage === "Story") {
+                        return this.config.length < 5
+                    }
+                    else {
+                        return false
+                    }
                 }
             },
             changeUser(username) {
@@ -93,26 +101,39 @@
                 this.$store.commit('setShowStatus', false)
             },
             loadMore() {
-                if (this.pageNum + 5 > this.config.length) {
-                    this.pageNum = this.config.length
+                // if (this.pageNum + 5 > this.config.length) {
+                //     this.pageNum = this.config.length
+                // }
+                // else {
+                //     this.pageNum = this.pageNum + 5
+                // }
+                if (this.$store.state.whichPage === "Feed") {
+                    this.$store.commit('setFeedPaginate')
+                    this.$store.dispatch('getFeed')
+                }
+                else if (this.$store.state.whichPage === "Story") {
+                    this.$store.commit('setStoryPaginate')
+                    this.$store.dispatch('getStory')
                 }
                 else {
-                    this.pageNum = this.pageNum + 5
+                    this.$store.commit('setHashPaginate')
+                    this.$store.dispatch('getHashtags')
                 }
             },
-            goToHashtag(hashtag) {
-                let cut = hashtag.substr(1)
-                this.$store.commit('setSelectedHashtag', cut)
+            async goToHashtag(hashtag) {
+                let cut = hashtag.substr(2)
+                // this.$store.commit('setSelectedHashtag', cut)
+                await this.$store.dispatch('getHashtags', cut)
                 this.$store.commit('setWhichPage', 'Explore')
             },
-            goToStory(mention) {
+            async goToStory(mention) {
                 let cut = mention.substr(2)
                 // for (let i = 0; i < this.allUsers.length; i++) {
                 //     if (cut === this.allUsers[i].username) {
                 //         this.$store.commit("setSelectedUser", this.allUsers[i])
                 //     }
                 // }
-                this.$store.dispatch('getUser', cut)
+                await this.$store.dispatch('getUser', cut)
                 this.$store.commit('setWhichPage', "Story")
             },
             formatHtml(status) {

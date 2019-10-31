@@ -3,7 +3,7 @@
         <br><br>
         <add-status style="padding-left: 25%; padding-right: 25%;"></add-status>
         <br><br>
-        <status-list :config="statusList" style="margin-left: 25%; margin-right: 25%;"></status-list>
+        <status-list :key="loadKey" v-if="statusList.length > 0" :config="statusList" style="margin-left: 25%; margin-right: 25%;"></status-list>
     </section>
 </template>
 
@@ -14,15 +14,29 @@
     export default {
         name: "feed",
         components: {StatusList, AddStatus},
+        data: function() {
+            return {
+                loadKey: 0
+            }
+        },
+        watch: {
+            statusList() {
+                this.loadKey++
+            }
+        },
         computed: {
             statusList() {
-                if(this.$store.state.allStatuses.length > 0) {
-                    let sortedList = Array.from(this.$store.state.allStatuses)
-                    return sortedList.sort(function (a, b) {
-                        return a.timeStamp > b.timeStamp
-                    }).reverse()
-                }
+                // if (this.$store.state.allStatuses.length > 0) {
+                //     let sortedList = Array.from(this.$store.state.allStatuses)
+                //     return sortedList.sort(function (a, b) {
+                //         return a.timeStamp > b.timeStamp
+                //     }).reverse()
+                // }
+                return this.$store.state.allStatuses
             }
+        },
+        async mounted() {
+            await this.$store.dispatch('getFeed')
         }
     }
 </script>

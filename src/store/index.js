@@ -19,168 +19,12 @@ export const store = new Vuex.Store({
         selectedHashtag: '',
         follows: [],
         followedBy: [],
-
-
-
-
-
-
-        //DUMMY DATA
-        allUsers: [
-            {
-                username: 'chantelprows',
-                name: 'Chantel Prows',
-                password: 'password',
-                picture: 'https://picsum.photos/510/300?random',
-                follows: [
-                    {
-                        username: 'brodyprows',
-                        name: 'Brody Prows',
-                        picture: 'https://picsum.photos/510/300?random'
-                    }
-                ],
-                followedBy: [
-                    {
-                        username: 'brodyprows',
-                        name: 'Brody Prows',
-                        picture: 'https://picsum.photos/510/300?random'
-                    }
-                ]
-            },
-            {
-                username: 'brodyprows',
-                name: 'Brody Prows',
-                password: 'password',
-                picture: 'https://picsum.photos/510/300?random',
-                follows: [
-                    {
-                        username: 'chantelprows',
-                        name: 'Chantel Prows',
-                        picture: 'https://picsum.photos/510/300?random'
-                    }
-                ],
-                followedBy: [
-                    {
-                        username: 'chantelprows',
-                        name: 'Chantel Prows',
-                        picture: 'https://picsum.photos/510/300?random'
-                    }
-                ]
-            }
-        ],
-        allStatuses: [
-            {
-                status: "hello @brodyprows",
-                attachment: null,
-                username: 'chantelprows',
-                name: 'Chantel Prows',
-                id: '11',
-                timeStamp: 1569616630947,
-                image: 'https://picsum.photos/510/300?random'
-            },
-            {
-                status: "I am bored today #nbd",
-                attachment: null,
-                username: 'chantelprows',
-                name: 'Chantel Prows',
-                id: '12',
-                timeStamp: 1569616630947,
-                image: 'https://picsum.photos/510/300?random',
-                hashtags: ["#nbd"]
-            },
-            {
-                status: "sup #nbd",
-                attachment: null,
-                username: 'brodyprows',
-                name: 'Brody Prows',
-                id: '1',
-                timeStamp: 1569616630947,
-                image: 'https://picsum.photos/510/300?random',
-                hashtags: ['#nbd']
-            },
-            {
-                status: "hey",
-                attachment: null,
-                username: 'brodyprows',
-                name: 'Brody Prows',
-                id: '2',
-                timeStamp: 1569616630947,
-                image: 'https://picsum.photos/510/300?random'
-            },
-            {
-                status: "hi",
-                attachment: null,
-                username: 'brodyprows',
-                name: 'Brody Prows',
-                id: '3',
-                timeStamp: 1569616630947,
-                image: 'https://picsum.photos/510/300?random'
-            },
-            {
-                status: "whats up",
-                attachment: null,
-                username: 'brodyprows',
-                name: 'Brody Prows',
-                id: '4',
-                timeStamp: 1569616630947,
-                image: 'https://picsum.photos/510/300?random'
-            },
-            {
-                status: "hola",
-                attachment: null,
-                username: 'brodyprows',
-                name: 'Brody Prows',
-                id: '5',
-                timeStamp: 1569616630947,
-                image: 'https://picsum.photos/510/300?random'
-            },
-            {
-                status: "i like chantel",
-                attachment: null,
-                username: 'brodyprows',
-                name: 'Brody Prows',
-                id: '6',
-                timeStamp: 1569616630947,
-                image: 'https://picsum.photos/510/300?random'
-            },
-            {
-                status: "school sux",
-                attachment: null,
-                username: 'brodyprows',
-                name: 'Brody Prows',
-                id: '7',
-                timeStamp: 1569616630947,
-                image: 'https://picsum.photos/510/300?random'
-            },
-            {
-                status: "my dog emoji I made",
-                attachment: 'https://image.flaticon.com/icons/svg/616/616408.svg',
-                username: 'brodyprows',
-                name: 'Brody Prows',
-                id: '8',
-                timeStamp: 1569616630947,
-                image: 'https://picsum.photos/510/300?random'
-            },
-            {
-                status: "go byu!!!!!!!!",
-                attachment: null,
-                username: 'brodyprows',
-                name: 'Brody Prows',
-                id: '9',
-                timeStamp: 1569616630947,
-                image: 'https://picsum.photos/510/300?random'
-            },
-            {
-                status: "i love #baseball go #angels :)",
-                attachment: null,
-                username: 'brodyprows',
-                name: 'Brody Prows',
-                id: '10',
-                timeStamp: 1569616630947,
-                image: 'https://picsum.photos/510/300?random',
-                hashtags: ['#baseball', '#angels']
-            }
-        ]
+        hasRelationship: false,
+        feedPaginate: 1,
+        storyPaginate: 1,
+        hashPaginate: 1,
+        loggingIn: false,
+        allStatuses: []
     },
 
     getters: {
@@ -227,24 +71,44 @@ export const store = new Vuex.Store({
             state.selectedHashtag = str
         },
         setAllStatuses: (state, arr) => {
+            // for (let i = 0; i < arr.length; i++) {
+            //     state.allStatuses.push(arr[i])
+            // }
             state.allStatuses = arr
+        },
+        setHasRelationship: (state, bool) =>  {
+            state.hasRelationship = bool
+        },
+        setFeedPaginate: (state) => {
+            state.feedPaginate++
+        },
+        setStoryPaginate: (state) => {
+            state.storyPaginate++
+        },
+        setHashPaginate: (state) => {
+            state.hashPaginate++
+        },
+        setLoggingIn: (state, bool) => {
+            state.loggingIn = bool
         }
     },
 
     actions: {
-        fetchLogin: ({commit, state}) => {
+        fetchLogin: async ({commit, dispatch, state}) => {
             // login(state.username, state.password) LOGIN
-
-            for (let i = 0; i < state.allUsers.length; i++) {
-                if (state.allUsers[i].username === state.username && state.allUsers[i].password === state.password) {
-                    commit('setLoggedIn', true)
-                    commit('setWhichPage', 'Feed')
-                    commit('setLoginErr', false)
-                    commit('setCurrentUser', state.allUsers[i])
-                    commit('setSelectedUser', state.allUsers[i])
-                    break;
-                }
-            }
+            commit('setLoggingIn', true)
+            dispatch('getUser', state.username)
+            // for (let i = 0; i < state.allUsers.length; i++) {
+            //
+            //     if (state.allUsers[i].username === state.username && state.allUsers[i].password === state.password) {
+            commit('setLoggedIn', true)
+            commit('setWhichPage', 'Feed')
+            commit('setLoginErr', false)
+            commit('setCurrentUser', state.selectedUser)
+                    // commit('setSelectedUser', state.allUsers[i])
+                    // break;
+            //     }
+            // }
             if (!state.loggedIn) {
                 commit('setLoginErr', true)
             }
@@ -272,31 +136,121 @@ export const store = new Vuex.Store({
                 commit('setLoginErr', false)
             }
         },
-        unfollow: ({commit, state}) => {
-            for (let i = 0; i < state.currentUser.follows.length; i++) {
-                if (state.currentUser.follows[i].username === state.selectedUser.username) {
-                    state.currentUser.follows.splice(i, 1)
+        unfollow: ({commit, dispatch, state}) => {
+            let apigClient = apigClientFactory.newClient({
+                invokeUrl: 'https://nz503vqz32.execute-api.us-west-2.amazonaws.com/dev',
+                apiKey: 'zNOgJkbJNb5sQFQzwJD077yjx2LxnEk25g7Z2Hd7',
+                region: 'us-west-2'
+            });
+            let pathParams = {
+                follower: state.currentUser.username,
+                followee: state.selectedUser.username
+            };
+            let pathTemplate = '/follows/{follower}/{followee}'
+            let method = 'DELETE'
+            let additionalParams = ""
+            let body = ''
+            apigClient.invokeApi(pathParams, pathTemplate, method, additionalParams, body)
+                .then(function(result){
                     for (let j = 0; j < state.selectedUser.followedBy.length; j++) {
                         if (state.selectedUser.followedBy[j].username === state.currentUser.username) {
                             state.selectedUser.followedBy.splice(j, 1)
                         }
                     }
-                }
-            }
+
+                    dispatch('followRelationship', false)
+                }).catch( function(result){
+                console.log(result)
+            });
         },
-        follow: ({commit, state}, obj) => {
-            state.currentUser.follows.push(state.selectedUser)
-            state.selectedUser.followedBy.push(state.currentUser)
+        follow: ({commit, dispatch, state}) => {
+            let apigClient = apigClientFactory.newClient({
+                invokeUrl: 'https://nz503vqz32.execute-api.us-west-2.amazonaws.com/dev',
+                apiKey: 'zNOgJkbJNb5sQFQzwJD077yjx2LxnEk25g7Z2Hd7',
+                region: 'us-west-2'
+            });
+            let pathParams = {
+                follower: state.currentUser.username,
+                followee: state.selectedUser.username
+            };
+            let pathTemplate = '/follows/{follower}/{followee}'
+            let method = 'POST'
+            let additionalParams = ""
+            let body = ''
+            apigClient.invokeApi(pathParams, pathTemplate, method, additionalParams, body)
+                .then(function(result){
+                    state.currentUser.follows.push(state.selectedUser)
+                    state.selectedUser.followedBy.push(state.currentUser)
+                    dispatch('followRelationship', true)
+
+                }).catch( function(result){
+                console.log(result)
+            });
+        },
+        followRelationship: ({commit, state}, bool) => {
+            let apigClient = apigClientFactory.newClient({
+                invokeUrl: 'https://nz503vqz32.execute-api.us-west-2.amazonaws.com/dev',
+                apiKey: 'zNOgJkbJNb5sQFQzwJD077yjx2LxnEk25g7Z2Hd7',
+                region: 'us-west-2'
+            });
+            let pathParams = {
+                follower: state.currentUser.username,
+                followee: state.selectedUser.username
+            };
+            let pathTemplate = '/follows/{follower}/{followee}'
+            let method = 'GET'
+            let additionalParams = ""
+            let body = ''
+            apigClient.invokeApi(pathParams, pathTemplate, method, additionalParams, body)
+                .then(function(result){
+                    commit('setHasRelationship', bool)
+                }).catch( function(result){
+                console.log(result)
+            });
         },
         addStatus: ({commit, state}, obj) => {
-            state.allStatuses.push(obj)
+            let apigClient = apigClientFactory.newClient({
+                invokeUrl: 'https://nz503vqz32.execute-api.us-west-2.amazonaws.com/dev',
+                apiKey: 'zNOgJkbJNb5sQFQzwJD077yjx2LxnEk25g7Z2Hd7',
+                region: 'us-west-2'
+            })
+
+            let pathParams = {}
+            let pathTemplate = '/status'
+            let method = 'POST'
+            let additionalParams = ""
+            let body = obj
+
+            apigClient.invokeApi(pathParams, pathTemplate, method, additionalParams, body)
+                .then(function(result){
+                    state.allStatuses.unshift(obj)
+                }).catch( function(result){
+                console.log(result)
+            });
         },
         deleteStatus: ({commit, state}, obj) => {
-            for (let i = 0; i < state.allStatuses.length; i++) {
-                if (obj.id === state.allStatuses[i].id) {
-                    state.allStatuses.splice(i, 1)
-                }
+            let apigClient = apigClientFactory.newClient({
+                invokeUrl: 'https://nz503vqz32.execute-api.us-west-2.amazonaws.com/dev',
+                apiKey: 'zNOgJkbJNb5sQFQzwJD077yjx2LxnEk25g7Z2Hd7',
+                region: 'us-west-2'
+            })
+            let pathParams = {
+                id: obj.id,
             }
+            let pathTemplate = '/status/{id}'
+            let method = 'DELETE'
+            let additionalParams = ""
+            let body = obj
+            apigClient.invokeApi(pathParams, pathTemplate, method, additionalParams, body)
+                .then(function(result){
+                    for (let i = 0; i < state.allStatuses.length; i++) {
+                        if (obj.id === state.allStatuses[i].id) {
+                            state.allStatuses.splice(i, 1)
+                        }
+                    }
+                }).catch( function(result){
+                console.log(result)
+            })
         },
         getUser: ({commit, dispatch, state}, username) => {
             let apigClient = apigClientFactory.newClient({
@@ -323,10 +277,17 @@ export const store = new Vuex.Store({
             let body = ''
             apigClient.invokeApi(pathParams, pathTemplate, method, additionalParams, body)
                 .then(async function(result){
-                    console.log(result.data.output)
                     commit('setSelectedUser', result.data.output)
+                    if (state.loggingIn) {
+                        commit('setCurrentUser', result.data.output)
+                        commit('setLoggingIn', false)
+                    }
                     dispatch('getFollowersList', state.selectedUser.username)
                     dispatch('getFollowingList', state.selectedUser.username)
+                    dispatch('followRelationship', true)
+                    if (state.whichPage === "Story") {
+                        dispatch('getStory')
+                    }
                 }).catch( function(result){
                     console.log(result)
 
@@ -348,11 +309,9 @@ export const store = new Vuex.Store({
             let body = ''
             apigClient.invokeApi(pathParams, pathTemplate, method, additionalParams, body)
                 .then(function(result){
-                    console.log(result.data)
                     commit('setFollowers', result.data)
                 }).catch( function(result){
                 console.log(result)
-
             });
         },
         getFollowingList: ({commit, state}, username) => {
@@ -360,23 +319,107 @@ export const store = new Vuex.Store({
                 invokeUrl: 'https://nz503vqz32.execute-api.us-west-2.amazonaws.com/dev',
                 apiKey: 'zNOgJkbJNb5sQFQzwJD077yjx2LxnEk25g7Z2Hd7',
                 region: 'us-west-2'
-            });
+            })
             let pathParams = {
                 username: username,
                 pagenum: 1
-            };
+            }
             let pathTemplate = '/follows/following/{username}/{pagenum}'
-            let method = 'GET';
+            let method = 'GET'
             let additionalParams = ""
             let body = ''
             apigClient.invokeApi(pathParams, pathTemplate, method, additionalParams, body)
                 .then(function(result){
-                    console.log(result.data)
                     commit('setFollowing', result.data)
                 }).catch( function(result){
                 console.log(result)
-
-            });
+            })
         },
+        getFeed: ({commit, state}) => {
+            let apigClient = apigClientFactory.newClient({
+                invokeUrl: 'https://nz503vqz32.execute-api.us-west-2.amazonaws.com/dev',
+                apiKey: 'zNOgJkbJNb5sQFQzwJD077yjx2LxnEk25g7Z2Hd7',
+                region: 'us-west-2'
+            })
+            let pathParams = {
+                username: state.currentUser.username,
+                pagenum: state.feedPaginate
+            }
+            let pathTemplate = '/status/feed/{username}/{pagenum}'
+            let method = 'GET'
+            let additionalParams = ""
+            let body = ''
+            apigClient.invokeApi(pathParams, pathTemplate, method, additionalParams, body)
+                .then(function(result){
+                    commit('setAllStatuses', result.data)
+                }).catch( function(result){
+                console.log(result)
+            })
+        },
+        getStory: ({commit, state}) => {
+            let apigClient = apigClientFactory.newClient({
+                invokeUrl: 'https://nz503vqz32.execute-api.us-west-2.amazonaws.com/dev',
+                apiKey: 'zNOgJkbJNb5sQFQzwJD077yjx2LxnEk25g7Z2Hd7',
+                region: 'us-west-2'
+            })
+            let pathParams = {
+                username: state.selectedUser.username,
+                pagenum: state.storyPaginate
+            }
+            let pathTemplate = '/status/user/{username}/{pagenum}'
+            let method = 'GET'
+            let additionalParams = ""
+            let body = ''
+            apigClient.invokeApi(pathParams, pathTemplate, method, additionalParams, body)
+                .then(function(result){
+                    commit('setAllStatuses', result.data)
+                }).catch( function(result){
+                console.log(result)
+            })
+        },
+        getHashtags: ({commit, state}, hashtag) => {
+            let apigClient = apigClientFactory.newClient({
+                invokeUrl: 'https://nz503vqz32.execute-api.us-west-2.amazonaws.com/dev',
+                apiKey: 'zNOgJkbJNb5sQFQzwJD077yjx2LxnEk25g7Z2Hd7',
+                region: 'us-west-2'
+            })
+            let pathParams = {
+                hashtag: hashtag,
+                pagenum: state.hashPaginate
+            }
+            let pathTemplate = '/status/hashtag/{hashtag}/{pagenum}'
+            let method = 'GET'
+            let additionalParams = ""
+            let body = ''
+            apigClient.invokeApi(pathParams, pathTemplate, method, additionalParams, body)
+                .then(function(result){
+                    commit('setAllStatuses', result.data)
+                }).catch( function(result){
+                console.log(result)
+            })
+        },
+        changePhoto: ({commit, state}, photo) => {
+            let apigClient = apigClientFactory.newClient({
+                invokeUrl: 'https://nz503vqz32.execute-api.us-west-2.amazonaws.com/dev',
+                apiKey: 'zNOgJkbJNb5sQFQzwJD077yjx2LxnEk25g7Z2Hd7',
+                region: 'us-west-2'
+            })
+            let pathParams = {
+                username: state.currentUser.username,
+                photo: photo
+            }
+            let pathTemplate = '/user/photo/{username}/{photo}'
+            let method = 'PUT'
+            let additionalParams = ""
+            let body = ''
+            apigClient.invokeApi(pathParams, pathTemplate, method, additionalParams, body)
+                .then(function(result){
+                    console.log(result)
+                    state.currentUser.photo = photo
+                }).catch( function(result){
+                console.log(result)
+            })
+
+        }
     }
 });

@@ -76,7 +76,10 @@
         this.$store.commit('setLoginErr', false)
         this.$store.commit('setWhichPage', str)
         if (str === 'Story') {
-          this.$store.commit('setSelectedUser', this.$store.state.currentUser)
+          this.$store.dispatch('getUser', this.$store.state.currentUser.username)
+        }
+        if (str === 'Explore') {
+          this.$store.commit('setAllStatuses', [])
         }
       },
       logout() {

@@ -88,8 +88,9 @@
                 return innerHTML
             },
             goToHashtag(hashtag) {
-                let cut = hashtag.substr(1)
-                this.$store.commit('setSelectedHashtag', cut)
+                let cut = hashtag.substr(2)
+                // this.$store.commit('setSelectedHashtag', cut)
+                this.$store.dispatch('getHashtags', cut)
                 this.$store.commit('setShowStatus', false)
                 this.$store.commit('setWhichPage', 'Explore')
             },
