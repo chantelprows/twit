@@ -18,8 +18,8 @@
                 <h1 style="font-size: 60px;"> {{selectedUser.name}}</h1>
                 <div style="font-size: 20px; padding-left: 15px;"> @{{selectedUser.username}}</div>
                 <div style="display: flex;">
-                    <div style="padding-left: 15px; padding-top: 3px; font-style: italic" class="cp" @click="viewFollowing()"> {{selectedUser.follows.length}} following </div>
-                    <div style="padding-left: 15px; padding-top: 3px; font-style: italic" class="cp" @click="viewFollowers()"> {{selectedUser.followedBy.length}} followers </div>
+                    <div style="padding-left: 15px; padding-top: 3px; font-style: italic" class="cp" @click="viewFollowing()"> {{follows.length}} following </div>
+                    <div style="padding-left: 15px; padding-top: 3px; font-style: italic" class="cp" @click="viewFollowers()"> {{followedBy.length}} followers </div>
                     <v-btn v-if="!isSelf() && loggedIn" style="margin-left: 15px; color: white;" color="#2196F3" rounded @click="follow()"> {{followText()}} </v-btn>
                 </div>
             </div>
@@ -77,6 +77,12 @@
             },
             loggedIn() {
                 return this.$store.state.loggedIn
+            },
+            follows() {
+                return this.$store.state.follows
+            },
+            followedBy() {
+                return this.$store.state.followedBy
             }
         },
         methods: {

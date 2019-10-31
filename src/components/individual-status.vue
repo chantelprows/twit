@@ -49,11 +49,12 @@
                 this.$store.commit('setShowStatus', false)
             },
             changeUser(username) {
-                for (let i = 0; i < this.allUsers.length; i++) {
-                    if (username === this.allUsers[i].username) {
-                        this.$store.commit('setSelectedUser', this.allUsers[i])
-                    }
-                }
+                // for (let i = 0; i < this.allUsers.length; i++) {
+                //     if (username === this.allUsers[i].username) {
+                //         this.$store.commit('setSelectedUser', this.allUsers[i])
+                //     }
+                // }
+                this.$store.dispatch('getUser', username)
                 this.$store.commit('setWhichPage', "Story")
                 this.$store.commit('setShowStatus', false)
             },
@@ -94,11 +95,12 @@
             },
             goToStory(mention) {
                 let cut = mention.substr(2)
-                for (let i = 0; i < this.allUsers.length; i++) {
-                    if (cut === this.allUsers[i].username) {
-                        this.$store.commit("setSelectedUser", this.allUsers[i])
-                    }
-                }
+                // for (let i = 0; i < this.allUsers.length; i++) {
+                //     if (cut === this.allUsers[i].username) {
+                //         this.$store.commit("setSelectedUser", this.allUsers[i])
+                //     }
+                // }
+                this.$store.dispatch('getUser', cut)
                 this.$store.commit('setWhichPage', "Story")
             }
         },

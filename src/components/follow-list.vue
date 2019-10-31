@@ -54,7 +54,7 @@
                 this.$store.commit('setShowFollow', false)
             },
             selectUser(user) {
-                this.$store.commit('setSelectedUser', this.allUsers[1])
+                this.$store.dispatch('getUser', user.username)
                 this.close()
             }
         }

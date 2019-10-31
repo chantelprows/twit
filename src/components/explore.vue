@@ -82,7 +82,7 @@
                 console.log("search: ", this.search)
             },
             changeUser(user) {
-                this.$store.commit('setSelectedUser', user)
+                this.$store.dispatch('getUser', user.username)
                 this.$store.commit('setWhichPage', "Story")
             }
         }

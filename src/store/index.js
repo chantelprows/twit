@@ -1,6 +1,8 @@
 import Vuex from 'vuex'
 import Vue from 'vue'
 
+var apigClientFactory = require('aws-api-gateway-client').default;
+
 Vue.use(Vuex)
 
 export const store = new Vuex.Store({
@@ -15,6 +17,9 @@ export const store = new Vuex.Store({
         showFollow: false,
         showStatus: false,
         selectedHashtag: '',
+        follows: [],
+        followedBy: [],
+
 
 
 
@@ -201,6 +206,14 @@ export const store = new Vuex.Store({
         setSelectedUser: (state, obj) => {
             state.selectedUser = obj
         },
+        setFollowers: (state, arr) => {
+            state.selectedUser.followedBy = arr
+            state.followedBy = arr
+        },
+        setFollowing: (state, arr) => {
+            state.selectedUser.follows = arr
+            state.follows = arr
+        },
         setLoginErr: (state, bool) => {
             state.loginErr = bool
         },
@@ -284,6 +297,86 @@ export const store = new Vuex.Store({
                     state.allStatuses.splice(i, 1)
                 }
             }
-        }
+        },
+        getUser: ({commit, dispatch, state}, username) => {
+            let apigClient = apigClientFactory.newClient({
+                invokeUrl: 'https://nz503vqz32.execute-api.us-west-2.amazonaws.com/dev',
+                apiKey: 'zNOgJkbJNb5sQFQzwJD077yjx2LxnEk25g7Z2Hd7',
+                region: 'us-west-2'
+            });
+            let pathParams = {
+                username: username,
+            };
+            let pathTemplate = '/user/{username}'
+            let method = 'GET';
+            let additionalParams = "" //{
+                //If there are query parameters or headers that need to be sent with the request you can add them here
+                // headers: {
+                //     param0: '',
+                //     param1: ''
+                // },
+                // queryParams: {
+                //     param0: '',
+                //     param1: ''
+                // }
+            //};
+            let body = ''
+            apigClient.invokeApi(pathParams, pathTemplate, method, additionalParams, body)
+                .then(async function(result){
+                    console.log(result.data.output)
+                    commit('setSelectedUser', result.data.output)
+                    dispatch('getFollowersList', state.selectedUser.username)
+                    dispatch('getFollowingList', state.selectedUser.username)
+                }).catch( function(result){
+                    console.log(result)
+
+            });
+        },
+        getFollowersList: ({commit, state}, username) => {
+            let apigClient = apigClientFactory.newClient({
+                invokeUrl: 'https://nz503vqz32.execute-api.us-west-2.amazonaws.com/dev',
+                apiKey: 'zNOgJkbJNb5sQFQzwJD077yjx2LxnEk25g7Z2Hd7',
+                region: 'us-west-2'
+            });
+            let pathParams = {
+                username: username,
+                pagenum: 1
+            };
+            let pathTemplate = '/follows/followers/{username}/{pagenum}'
+            let method = 'GET';
+            let additionalParams = ""
+            let body = ''
+            apigClient.invokeApi(pathParams, pathTemplate, method, additionalParams, body)
+                .then(function(result){
+                    console.log(result.data)
+                    commit('setFollowers', result.data)
+                }).catch( function(result){
+                console.log(result)
+
+            });
+        },
+        getFollowingList: ({commit, state}, username) => {
+            let apigClient = apigClientFactory.newClient({
+                invokeUrl: 'https://nz503vqz32.execute-api.us-west-2.amazonaws.com/dev',
+                apiKey: 'zNOgJkbJNb5sQFQzwJD077yjx2LxnEk25g7Z2Hd7',
+                region: 'us-west-2'
+            });
+            let pathParams = {
+                username: username,
+                pagenum: 1
+            };
+            let pathTemplate = '/follows/following/{username}/{pagenum}'
+            let method = 'GET';
+            let additionalParams = ""
+            let body = ''
+            apigClient.invokeApi(pathParams, pathTemplate, method, additionalParams, body)
+                .then(function(result){
+                    console.log(result.data)
+                    commit('setFollowing', result.data)
+                }).catch( function(result){
+                console.log(result)
+
+            });
+        },
     }
 });
