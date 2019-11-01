@@ -43,6 +43,8 @@
 </template>
 
 <script>
+    import firebase from 'firebase'
+
     export default {
         name: "signup",
         computed: {
@@ -66,13 +68,18 @@
                 return !(this.name && this.username && this.password && this.picture)
             },
             signUp() {
-                let user = {
+                let user1 = {
                     name: this.name,
                     username: this.username,
                     password: this.password,
                     picture: URL.createObjectURL(this.picture)
                 }
-                this.$store.dispatch('createUser', user)
+                firebase.auth().createUserWithEmailAndPassword(this.username + "@gmail.com", this.password).then((user) => {
+                    this.$store.dispatch('createUser', user1)
+                }).catch((err) => {
+                    this.$store.commit('setLoginErr', true)
+                })
+
             }
         }
     }

@@ -21,6 +21,10 @@
                 </div>
             </div>
             <br>
+            <div v-if="moreToShow()">
+                <v-btn color="#2196F3" style="color: white; margin-left: 100px;" @click="loadMore()"> Load More </v-btn>
+            </div>
+            <br>
             <v-btn color="#2196F3" style="color: white; margin-left: 20px; margin-bottom: 10px;" @click="close()"> Close </v-btn>
         </v-card>
     </v-dialog>
@@ -52,10 +56,25 @@
         methods: {
             close() {
                 this.$store.commit('setShowFollow', false)
+                this.$store.commit('setFollowPaginate', 0)
             },
             selectUser(user) {
                 this.$store.dispatch('getUser', user.username)
                 this.close()
+            },
+            moreToShow() {
+                if (this.followList) {
+                    return this.followList.length < 2 //CHANGE TO BE BETTER
+                }
+            },
+            loadMore() {
+                this.$store.commit('setFollowPaginate')
+                if (this.followType === 'Following') {
+                    this.$store.dispatch('getFollowingList', this.$store.state.selectedUser.username)
+                }
+                else {
+                    this.$store.dispatch('getFollowersList', this.$store.state.selectedUser.username)
+                }
             }
         }
     }

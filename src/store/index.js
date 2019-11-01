@@ -24,7 +24,8 @@ export const store = new Vuex.Store({
         storyPaginate: 1,
         hashPaginate: 1,
         loggingIn: false,
-        allStatuses: []
+        allStatuses: [],
+        followPaginate: 1
     },
 
     getters: {
@@ -90,51 +91,49 @@ export const store = new Vuex.Store({
         },
         setLoggingIn: (state, bool) => {
             state.loggingIn = bool
+        },
+        setFollowPaginate: (state, num) => {
+            if (num) {
+                state.followPaginate = num
+            }
+            else {
+                state.followPaginate++
+            }
         }
     },
 
     actions: {
         fetchLogin: async ({commit, dispatch, state}) => {
-            // login(state.username, state.password) LOGIN
             commit('setLoggingIn', true)
-            dispatch('getUser', state.username)
-            // for (let i = 0; i < state.allUsers.length; i++) {
-            //
-            //     if (state.allUsers[i].username === state.username && state.allUsers[i].password === state.password) {
             commit('setLoggedIn', true)
+            dispatch('getUser', state.username)
             commit('setWhichPage', 'Feed')
             commit('setLoginErr', false)
             commit('setCurrentUser', state.selectedUser)
-                    // commit('setSelectedUser', state.allUsers[i])
-                    // break;
-            //     }
-            // }
-            if (!state.loggedIn) {
-                commit('setLoginErr', true)
-            }
-            // commit('setCurrentUser', state.allUsers[0])
-            // commit('setSelectedUser', state.allUsers[0])
         },
         createUser: ({commit, state}, user) => {
-            //createUser
+            let apigClient = apigClientFactory.newClient({
+                invokeUrl: 'https://nz503vqz32.execute-api.us-west-2.amazonaws.com/dev',
+                apiKey: 'zNOgJkbJNb5sQFQzwJD077yjx2LxnEk25g7Z2Hd7',
+                region: 'us-west-2'
+            })
+            let pathParams = {}
+            let pathTemplate = '/user/add'
+            let method = 'POST'
+            let additionalParams = ""
+            let body = user
 
-            let uniqueUser = true
-            for (let i = 0; i < state.allUsers.length; i++) {
-                if (state.allUsers[i].username === user.username) {
-                    commit('setLoginErr', true)
-                    uniqueUser = false
-                    break;
-                }
-            }
-            user.follows = []
-            user.followedBy = []
-            if (uniqueUser) {
-                commit('setCurrentUser', user)
-                commit('setSelectedUser', user)
-                commit('setLoggedIn', true)
-                commit('setWhichPage', 'Feed')
-                commit('setLoginErr', false)
-            }
+            apigClient.invokeApi(pathParams, pathTemplate, method, additionalParams, body)
+                .then(function(result){
+                    console.log(result)
+                    //CHECK IF VALID SIGN IN
+                    commit("setCurrentUser", user)
+                    commit("setSelectedUser", user)
+                    commit('setLoggedIn', true)
+                    commit('setWhichPage', 'Feed')
+                }).catch( function(result){
+                    console.log(result)
+            })
         },
         unfollow: ({commit, dispatch, state}) => {
             let apigClient = apigClientFactory.newClient({
@@ -301,7 +300,7 @@ export const store = new Vuex.Store({
             });
             let pathParams = {
                 username: username,
-                pagenum: 1
+                pagenum: state.followPaginate
             };
             let pathTemplate = '/follows/followers/{username}/{pagenum}'
             let method = 'GET';
@@ -322,7 +321,7 @@ export const store = new Vuex.Store({
             })
             let pathParams = {
                 username: username,
-                pagenum: 1
+                pagenum: state.followPaginate
             }
             let pathTemplate = '/follows/following/{username}/{pagenum}'
             let method = 'GET'

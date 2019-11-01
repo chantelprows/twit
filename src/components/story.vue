@@ -18,8 +18,8 @@
                 <h1 style="font-size: 60px;"> {{selectedUser.name}}</h1>
                 <div style="font-size: 20px; padding-left: 15px;"> @{{selectedUser.username}}</div>
                 <div style="display: flex;">
-                    <div style="padding-left: 15px; padding-top: 3px; font-style: italic" class="cp" @click="viewFollowing()"> {{follows.length}} following </div>
-                    <div style="padding-left: 15px; padding-top: 3px; font-style: italic" class="cp" @click="viewFollowers()"> {{followedBy.length}} followers </div>
+                    <div style="padding-left: 15px; padding-top: 3px; font-style: italic" class="cp" @click="viewFollowing()"> {{follows.length === 1 ? 2 : follows.length}} following </div>
+                    <div style="padding-left: 15px; padding-top: 3px; font-style: italic" class="cp" @click="viewFollowers()"> {{followedBy.length === 1? 2 : followedBy.length}} followers </div>
                     <v-btn v-if="!isSelf() && loggedIn" style="margin-left: 15px; color: white;" color="#2196F3" rounded @click="follow()"> {{followText()}} </v-btn>
                 </div>
             </div>
@@ -28,7 +28,7 @@
         <add-status style="padding-left: 25%; padding-right: 25%;" v-if="currentUser.username === selectedUser.username"></add-status>
         <br><br><br>
         <status-list :key="loadKey" v-if="statuses.length > 0" :config="statuses" style="padding-left: 25%; padding-right: 25%;"></status-list>
-        <follow-list v-if="showFollow" :config="followObj"></follow-list>
+        <follow-list :key="lkey" v-if="showFollow" :config="followObj"></follow-list>
     </section>
 </template>
 
@@ -48,12 +48,21 @@
                 ],
                 addNew: false,
                 followObj: {},
-                loadKey: 0
+                loadKey: 0,
+                lkey: 0
             }
         },
         watch: {
             statuses() {
                 this.loadKey++
+            },
+            followedBy() {
+                this.followObj.followList = this.$store.state.followedBy
+                this.lkey++
+            },
+            follows() {
+                this.followObj.followList = this.$store.state.follows
+                this.lkey++
             }
         },
         computed: {
@@ -133,12 +142,12 @@
                 return 'https://picsum.photos/510/300?random'
             },
             viewFollowers() {
-                this.followObj.followList = this.selectedUser.followedBy
+                this.followObj.followList = this.$store.state.followedBy
                 this.followObj.followType = 'Followers'
                 this.$store.commit('setShowFollow', true)
             },
             viewFollowing() {
-                this.followObj.followList = this.selectedUser.follows
+                this.followObj.followList = this.$store.state.follows
                 this.followObj.followType = 'Following'
                 this.$store.commit('setShowFollow', true)
             }

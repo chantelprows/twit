@@ -36,6 +36,8 @@
 </template>
 
 <script>
+    import firebase from 'firebase'
+
     export default {
         name: "login",
         data: function() {
@@ -51,11 +53,14 @@
         },
         methods: {
             login() {
-                this.setUsername()
-                this.setPassword()
-                this.$store.dispatch('fetchLogin')
-                this.username = ""
-                this.password = ""
+                firebase.auth().signInWithEmailAndPassword(this.username + "@gmail.com", this.password).then((user) => {
+                    this.$store.commit('setUsername', this.username)
+                    this.$store.dispatch('fetchLogin')
+                    this.username = ""
+                    this.password = ""
+                }).catch((err) => {
+                    this.$store.commit('setLoginErr', true)
+                })
             },
             setUsername() {
                 this.$store.commit('setUsername', this.username)

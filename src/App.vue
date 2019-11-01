@@ -42,6 +42,7 @@
   import Feed from './components/feed'
   import Story from './components/story'
   import Explore from './components/explore'
+  import firebase from 'firebase'
 
   export default {
     name: 'App',
@@ -83,10 +84,20 @@
         }
       },
       logout() {
-        this.setPage("Login")
-        this.$store.commit('setCurrentUser', {})
-        this.$store.commit('setLoggedIn', false)
+        firebase.auth().signOut().then(() => {
+          this.setPage("Login")
+          this.$store.commit('setCurrentUser', {})
+          this.$store.commit('setLoggedIn', false)
+        })
       }
+    },
+    created() {
+      firebase.auth().onAuthStateChanged((user) => {
+        if (user) {
+          this.$store.commit('setUsername', user.email.replace('@gmail.com', ''))
+          this.$store.dispatch('fetchLogin')
+        }
+      })
     }
   };
 
