@@ -132,7 +132,7 @@
             },
             uploadPicture() {
                 this.addNew = false
-                this.$store.dispatch('changePhoto', URL.createObjectURL(this.picture))
+                this.$store.dispatch('changePhoto', URL.toDataURL(this.picture))
                 this.picture = null
             },
             urlGet() {

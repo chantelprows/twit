@@ -67,13 +67,32 @@
             disabled() {
                 return !(this.name && this.username && this.password && this.picture)
             },
-            signUp() {
+            singleFileToBase64(file) {
+                let reader = new FileReader();
+                // read the file into a base64 format
+                reader.readAsDataURL(file);
+
+                return new Promise((resolve, reject) => {
+                    reader.onerror = () => {
+                        reader.abort();
+                        reject("Insert error message here")
+                    };
+
+                    // return the base 64 string
+                    reader.onload = function () {
+                        resolve(reader.result);
+                    };
+                })
+            },
+            async signUp() {
+                let attach = await this.singleFileToBase64(this.picture)
+                console.log("PICTURE: ", attach)
                 let user1 = {
                     name: this.name,
                     username: this.username,
-                    password: this.password,
-                    picture: URL.createObjectURL(this.picture)
+                    photo: attach
                 }
+                console.log("USER: ", user1)
                 firebase.auth().createUserWithEmailAndPassword(this.username + "@gmail.com", this.password).then((user) => {
                     this.$store.dispatch('createUser', user1)
                 }).catch((err) => {
