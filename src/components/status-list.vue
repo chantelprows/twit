@@ -7,9 +7,9 @@
                     <div style="display: flex;">
                         <div style="font-weight: bold; padding-right: 10px;">{{status.name}} </div>
                         <div class="username" @click="changeUser(status.username)">@{{status.username}}</div>
-                        <v-icon v-if="showDelete(status)" style="padding-left: 10px;" title="Delete Status" @click="deleteStatus(status)">
-                            mdi-delete
-                        </v-icon>
+<!--                        <v-icon v-if="showDelete(status)" style="padding-left: 10px;" title="Delete Status" @click="deleteStatus(status)">-->
+<!--                            mdi-delete-->
+<!--                        </v-icon>-->
                     </div>
                     <div>
                         <div v-html="formatHtml(status.status)" ref="mydiv"> </div>
@@ -23,7 +23,7 @@
             </div>
         </div>
         <br>
-        <div v-if="moreToShow()">
+        <div v-if="!isEnd">
             <v-btn color="#2196F3" style="color: white;" @click="loadMore()"> Load More </v-btn>
         </div>
         <br>
@@ -49,6 +49,9 @@
             }
         },
         computed: {
+            isEnd() {
+                return this.$store.state.isEnd
+            },
             statusList() {
                 // if (this.config.length > this.pageNum) {
                 //     return this.config.slice(0, this.pageNum)
@@ -71,25 +74,12 @@
                 this.curStatus = status
                 this.$store.commit('setShowStatus', true)
             },
-            showDelete(status) {
-                return status.username === this.$store.state.currentUser.username
-            },
-            deleteStatus(status) {
-                this.$store.dispatch('deleteStatus', status)
-            },
-            moreToShow() {
-                if (this.config) {
-                    if (this.$store.state.whichPage === "Feed") {
-                        return this.config.length < 11 //CHANGE TO BE BETTER
-                    }
-                    else if (this.$store.state.whichPage === "Story") {
-                        return this.config.length < 5
-                    }
-                    else {
-                        return false
-                    }
-                }
-            },
+            // showDelete(status) {
+            //     return status.username === this.$store.state.currentUser.username
+            // },
+            // deleteStatus(status) {
+            //     this.$store.dispatch('deleteStatus', status)
+            // },
             changeUser(username) {
                 // for (let i = 0; i < this.allUsers.length; i++) {
                 //     if (username === this.allUsers[i].username) {

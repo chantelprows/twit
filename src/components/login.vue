@@ -65,9 +65,6 @@
             setUsername() {
                 this.$store.commit('setUsername', this.username)
             },
-            setPassword() {
-                this.$store.commit('setPassword', this.password)
-            },
             signUp() {
                 this.$store.commit('setWhichPage', 'Signup')
                 this.$store.commit('setLoginErr', false)

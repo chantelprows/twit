@@ -21,7 +21,7 @@
                 </div>
             </div>
             <br>
-            <div v-if="moreToShow()">
+            <div v-if="!isEnd">
                 <v-btn color="#2196F3" style="color: white; margin-left: 100px;" @click="loadMore()"> Load More </v-btn>
             </div>
             <br>
@@ -40,11 +40,14 @@
             }
         },
         computed: {
+            isEnd() {
+                return this.$store.state.isEnd
+            },
             showFollow() {
                 return this.$store.state.showFollow
             },
             followList() {
-                return this.config.followList
+                return [ ...new Set(this.config.followList) ]
             },
             followType() {
                 return this.config.followType
@@ -61,11 +64,6 @@
             selectUser(user) {
                 this.$store.dispatch('getUser', user.username)
                 this.close()
-            },
-            moreToShow() {
-                if (this.followList) {
-                    return this.followList.length < 2 //CHANGE TO BE BETTER
-                }
             },
             loadMore() {
                 this.$store.commit('setFollowPaginate')

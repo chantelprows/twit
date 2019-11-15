@@ -14,24 +14,23 @@
             <v-icon @click="showInput = !showInput" large style="padding-bottom: 20px;"> mdi-paperclip </v-icon>
         </div>
 
-        <v-file-input
+        <v-text-field
                 v-show="showInput"
-                label="Add Photo or Video"
-                prepend-icon="mdi-paperclip"
-                accept="image/jpeg"
-                :rules="rules"
+                label="URL"
+                prepend-inner-icon="mdi-paperclip"
                 v-model="attachment"
+                clearable
+                solo
         >
-            <template v-slot:selection="{ text }">
-                <v-chip
-                        small
-                        label
-                        color="primary"
-                >
-                    {{ text }}
-                </v-chip>
-            </template>
-        </v-file-input>
+        </v-text-field>
+        <v-text-field
+                v-show="showInput"
+                label="Type (Photo or Video)"
+                v-model="type"
+                clearable
+                solo
+        >
+        </v-text-field>
         <v-btn style="color: white;" color="#2196F3" @click="chirp()" :disabled="statusText === ''"> Chirp </v-btn>
     </section>
 </template>
@@ -42,11 +41,12 @@
         data: function() {
             return {
                 statusText: "",
-                attachment: null,
+                attachment: "",
                 rules: [
                     //     value => !value || value.size < 2000000 || 'Photo size should be less than 2 MB!',
                 ],
-                showInput: false
+                showInput: false,
+                type: ""
             }
         },
         computed: {
@@ -57,21 +57,17 @@
         methods: {
             chirp() {
                 let id = '_' + Math.random().toString(36).substr(2, 9)
-                let attach
-                if (this.attachment) {
-                    attach = URL.createObjectURL(this.attachment)
-                }
-                else {
-                    attach = null
-                }
                 let body = {
                     status: this.statusText,
-                    attachment: attach,
                     username: this.currentUser.username,
                     name: this.currentUser.name,
                     id: id,
                     timeStamp: Date.now(),
-                    image: this.currentUser.picture
+                    image: this.currentUser.photo
+                }
+                if (this.attachment) {
+                    body.attachment = this.attachment
+                    body.type = this.type
                 }
                 for (let i = 0; i < this.statusText.length; i++) {
                     if (this.statusText.charAt(i) === '#') {
@@ -87,7 +83,8 @@
                 this.$store.dispatch('addStatus', body)
                 this.statusText = ""
                 this.showInput = false
-                this.attachment = null
+                this.attachment = ""
+                this.type = ""
             }
         }
     }

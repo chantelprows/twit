@@ -67,38 +67,73 @@
             disabled() {
                 return !(this.name && this.username && this.password && this.picture)
             },
-            singleFileToBase64(file) {
-                let reader = new FileReader();
-                // read the file into a base64 format
-                reader.readAsDataURL(file);
-
-                return new Promise((resolve, reject) => {
-                    reader.onerror = () => {
-                        reader.abort();
-                        reject("Insert error message here")
-                    };
-
-                    // return the base 64 string
-                    reader.onload = function () {
-                        resolve(reader.result);
-                    };
-                })
-            },
+            // singleFileToBase64(file) {
+            //     let reader = new FileReader();
+            //     // read the file into a base64 format
+            //     reader.readAsDataURL(file);
+            //
+            //     return new Promise((resolve, reject) => {
+            //         reader.onerror = () => {
+            //             reader.abort();
+            //             reject("Insert error message here")
+            //         };
+            //
+            //         // return the base 64 string
+            //         reader.onload = function () {
+            //             resolve(reader.result);
+            //         };
+            //     })
+            // },
             async signUp() {
-                let attach = await this.singleFileToBase64(this.picture)
-                console.log("PICTURE: ", attach)
+                let AWS = require('aws-sdk')
+
+                // let attach = await this.singleFileToBase64(this.picture)
                 let user1 = {
                     name: this.name,
                     username: this.username,
-                    photo: attach
+                    photo: "https://photos-cs340.s3-us-west-2.amazonaws.com/photo/" + this.username
                 }
-                console.log("USER: ", user1)
                 firebase.auth().createUserWithEmailAndPassword(this.username + "@gmail.com", this.password).then((user) => {
                     this.$store.dispatch('createUser', user1)
+
+
+                    AWS.config.region = 'us-west-2'
+                    AWS.config.credentials = new AWS.CognitoIdentityCredentials({
+                        IdentityPoolId: 'us-west-2:c82ad060-6671-4686-9f9a-2cfec06297dc',
+                    })
+                    AWS.config.credentials.get(function(err) {
+                        if (err) alert(err)
+                        // console.log(AWS.config.credentials)
+                    })
+
+                    let bucketName = 'photos-cs340'
+                    let bucket = new AWS.S3({
+                        params: {
+                            Bucket: bucketName
+                        }
+                    })
+
+                    let file = this.picture
+                    if (file) {
+                        let objKey = 'photo/' + this.username
+                        let params = {
+                            Key: objKey,
+                            ContentType: file.type,
+                            Body: file,
+                            ACL: 'public-read'
+                        }
+
+                        bucket.putObject(params, function(err, data) {
+                            if (err) {
+                                alert(err)
+                            } else {
+                                console.log("WORKED")
+                            }
+                        })
+                    }
                 }).catch((err) => {
                     this.$store.commit('setLoginErr', true)
                 })
-
             }
         }
     }

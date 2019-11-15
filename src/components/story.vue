@@ -2,8 +2,8 @@
     <section style="padding-left: 20px; padding-top: 20px;">
         <div style="display: inline-flex;">
             <div style="display: block">
-                <v-img :src="urlGet()" height="120" width="120" style="margin-top: 20px;"></v-img>
-                <div  v-if="currentUser.username === selectedUser.username" style="font-style: italic;" class="cp" @click="addNew = true"> Change Picture </div>
+                <v-img :key="pkey" :src="selectedUser.photo" height="120" width="120" style="margin-top: 20px;"></v-img>
+                <div v-if="currentUser.username === selectedUser.username" style="font-style: italic;" class="cp" @click="addNew = true"> Change Picture </div>
                 <v-file-input
                         label="Profile Photo"
                         prepend-icon="mdi-camera"
@@ -49,7 +49,8 @@
                 addNew: false,
                 followObj: {},
                 loadKey: 0,
-                lkey: 0
+                lkey: 0,
+                pkey: 0
             }
         },
         watch: {
@@ -132,15 +133,53 @@
             },
             uploadPicture() {
                 this.addNew = false
-                this.$store.dispatch('changePhoto', URL.toDataURL(this.picture))
+
+                let AWS = require('aws-sdk')
+
+                AWS.config.region = 'us-west-2'
+                AWS.config.credentials = new AWS.CognitoIdentityCredentials({
+                    IdentityPoolId: 'us-west-2:c82ad060-6671-4686-9f9a-2cfec06297dc',
+                })
+                AWS.config.credentials.get(function(err) {
+                    if (err) alert(err)
+                    // console.log(AWS.config.credentials)
+                })
+
+                let bucketName = 'photos-cs340'
+                let bucket = new AWS.S3({
+                    params: {
+                        Bucket: bucketName
+                    }
+                })
+
+                let file = this.picture
+                if (file) {
+                    let objKey = 'photo/' + this.currentUser.username
+                    let params = {
+                        Key: objKey,
+                        ContentType: file.type,
+                        Body: file,
+                        ACL: 'public-read'
+                    }
+
+                    bucket.putObject(params, function(err, data) {
+                        if (err) {
+                            alert(err)
+                        } else {
+                            console.log("WORKED")
+                            this.pkey++
+                        }
+                    })
+                }
+                // this.$store.dispatch('changePhoto', URL.toDataURL(this.picture))
                 this.picture = null
             },
-            urlGet() {
-                if (this.selectedUser.picture) {
-                    return this.selectedUser.picture
-                }
-                return 'https://picsum.photos/510/300?random'
-            },
+            // urlGet() {
+            //     if (this.selectedUser.photo) {
+            //         return this.selectedUser.photo
+            //     }
+            //     return 'https://picsum.photos/510/300?random'
+            // },
             viewFollowers() {
                 this.followObj.followList = this.$store.state.followedBy
                 this.followObj.followType = 'Followers'

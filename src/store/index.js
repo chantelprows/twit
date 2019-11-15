@@ -8,7 +8,6 @@ Vue.use(Vuex)
 export const store = new Vuex.Store({
     state: {
         username: "",
-        password: "",
         loggedIn: false,
         whichPage: "Login",
         currentUser: {},
@@ -25,7 +24,8 @@ export const store = new Vuex.Store({
         hashPaginate: 1,
         loggingIn: false,
         allStatuses: [],
-        followPaginate: 1
+        followPaginate: 1,
+        isEnd: false
     },
 
     getters: {
@@ -35,9 +35,6 @@ export const store = new Vuex.Store({
     mutations: {
         setUsername: (state, str) => {
             state.username = str
-        },
-        setPassword: (state, str) => {
-            state.password = str
         },
         setLoggedIn: (state, bool) => {
             state.loggedIn = bool
@@ -52,12 +49,21 @@ export const store = new Vuex.Store({
             state.selectedUser = obj
         },
         setFollowers: (state, arr) => {
-            state.selectedUser.followedBy = arr
-            state.followedBy = arr
+            for (let i = 0; i < arr.length; i++) {
+                // if (state.selectedUser) {
+                //     state.selectedUser.followedBy.push(arr[i])
+                // }
+                state.followedBy.push(arr[i])
+            }
         },
         setFollowing: (state, arr) => {
-            state.selectedUser.follows = arr
-            state.follows = arr
+
+            for (let i = 0; i < arr.length; i++) {
+                // if (state.selectedUser) {
+                //     state.selectedUser.follows.push(arr[i])
+                // }
+                state.follows.push(arr[i])
+            }
         },
         setLoginErr: (state, bool) => {
             state.loginErr = bool
@@ -72,10 +78,10 @@ export const store = new Vuex.Store({
             state.selectedHashtag = str
         },
         setAllStatuses: (state, arr) => {
-            // for (let i = 0; i < arr.length; i++) {
-            //     state.allStatuses.push(arr[i])
-            // }
-            state.allStatuses = arr
+            for (let i = 0; i < arr.length; i++) {
+                state.allStatuses.push(arr[i])
+            }
+            // state.allStatuses = arr
         },
         setHasRelationship: (state, bool) =>  {
             state.hasRelationship = bool
@@ -140,11 +146,11 @@ export const store = new Vuex.Store({
                 invokeUrl: 'https://nz503vqz32.execute-api.us-west-2.amazonaws.com/dev',
                 apiKey: 'zNOgJkbJNb5sQFQzwJD077yjx2LxnEk25g7Z2Hd7',
                 region: 'us-west-2'
-            });
+            })
             let pathParams = {
                 follower: state.currentUser.username,
                 followee: state.selectedUser.username
-            };
+            }
             let pathTemplate = '/follows/{follower}/{followee}'
             let method = 'DELETE'
             let additionalParams = ""
@@ -160,18 +166,18 @@ export const store = new Vuex.Store({
                     dispatch('followRelationship', false)
                 }).catch( function(result){
                 console.log(result)
-            });
+            })
         },
         follow: ({commit, dispatch, state}) => {
             let apigClient = apigClientFactory.newClient({
                 invokeUrl: 'https://nz503vqz32.execute-api.us-west-2.amazonaws.com/dev',
                 apiKey: 'zNOgJkbJNb5sQFQzwJD077yjx2LxnEk25g7Z2Hd7',
                 region: 'us-west-2'
-            });
+            })
             let pathParams = {
                 follower: state.currentUser.username,
                 followee: state.selectedUser.username
-            };
+            }
             let pathTemplate = '/follows/{follower}/{followee}'
             let method = 'POST'
             let additionalParams = ""
@@ -184,18 +190,18 @@ export const store = new Vuex.Store({
 
                 }).catch( function(result){
                 console.log(result)
-            });
+            })
         },
         followRelationship: ({commit, state}, bool) => {
             let apigClient = apigClientFactory.newClient({
                 invokeUrl: 'https://nz503vqz32.execute-api.us-west-2.amazonaws.com/dev',
                 apiKey: 'zNOgJkbJNb5sQFQzwJD077yjx2LxnEk25g7Z2Hd7',
                 region: 'us-west-2'
-            });
+            })
             let pathParams = {
                 follower: state.currentUser.username,
                 followee: state.selectedUser.username
-            };
+            }
             let pathTemplate = '/follows/{follower}/{followee}'
             let method = 'GET'
             let additionalParams = ""
@@ -205,7 +211,7 @@ export const store = new Vuex.Store({
                     commit('setHasRelationship', bool)
                 }).catch( function(result){
                 console.log(result)
-            });
+            })
         },
         addStatus: ({commit, state}, obj) => {
             let apigClient = apigClientFactory.newClient({
@@ -218,61 +224,50 @@ export const store = new Vuex.Store({
             let pathTemplate = '/status'
             let method = 'POST'
             let additionalParams = ""
-            let body = obj
 
-            apigClient.invokeApi(pathParams, pathTemplate, method, additionalParams, body)
+            apigClient.invokeApi(pathParams, pathTemplate, method, additionalParams, obj)
                 .then(function(result){
                     state.allStatuses.unshift(obj)
                 }).catch( function(result){
                 console.log(result)
-            });
-        },
-        deleteStatus: ({commit, state}, obj) => {
-            let apigClient = apigClientFactory.newClient({
-                invokeUrl: 'https://nz503vqz32.execute-api.us-west-2.amazonaws.com/dev',
-                apiKey: 'zNOgJkbJNb5sQFQzwJD077yjx2LxnEk25g7Z2Hd7',
-                region: 'us-west-2'
-            })
-            let pathParams = {
-                id: obj.id,
-            }
-            let pathTemplate = '/status/{id}'
-            let method = 'DELETE'
-            let additionalParams = ""
-            let body = obj
-            apigClient.invokeApi(pathParams, pathTemplate, method, additionalParams, body)
-                .then(function(result){
-                    for (let i = 0; i < state.allStatuses.length; i++) {
-                        if (obj.id === state.allStatuses[i].id) {
-                            state.allStatuses.splice(i, 1)
-                        }
-                    }
-                }).catch( function(result){
-                console.log(result)
             })
         },
+        // deleteStatus: ({commit, state}, obj) => {
+        //     let apigClient = apigClientFactory.newClient({
+        //         invokeUrl: 'https://nz503vqz32.execute-api.us-west-2.amazonaws.com/dev',
+        //         apiKey: 'zNOgJkbJNb5sQFQzwJD077yjx2LxnEk25g7Z2Hd7',
+        //         region: 'us-west-2'
+        //     })
+        //     let pathParams = {
+        //         id: obj.id,
+        //     }
+        //     let pathTemplate = '/status/{id}'
+        //     let method = 'DELETE'
+        //     let additionalParams = ""
+        //     let body = obj
+        //     apigClient.invokeApi(pathParams, pathTemplate, method, additionalParams, body)
+        //         .then(function(result){
+        //             for (let i = 0; i < state.allStatuses.length; i++) {
+        //                 if (obj.id === state.allStatuses[i].id) {
+        //                     state.allStatuses.splice(i, 1)
+        //                 }
+        //             }
+        //         }).catch( function(result){
+        //         console.log(result)
+        //     })
+        // },
         getUser: ({commit, dispatch, state}, username) => {
             let apigClient = apigClientFactory.newClient({
                 invokeUrl: 'https://nz503vqz32.execute-api.us-west-2.amazonaws.com/dev',
                 apiKey: 'zNOgJkbJNb5sQFQzwJD077yjx2LxnEk25g7Z2Hd7',
                 region: 'us-west-2'
-            });
+            })
             let pathParams = {
                 username: username,
-            };
+            }
             let pathTemplate = '/user/{username}'
-            let method = 'GET';
-            let additionalParams = "" //{
-                //If there are query parameters or headers that need to be sent with the request you can add them here
-                // headers: {
-                //     param0: '',
-                //     param1: ''
-                // },
-                // queryParams: {
-                //     param0: '',
-                //     param1: ''
-                // }
-            //};
+            let method = 'GET'
+            let additionalParams = ""
             let body = ''
             apigClient.invokeApi(pathParams, pathTemplate, method, additionalParams, body)
                 .then(async function(result){
@@ -284,34 +279,40 @@ export const store = new Vuex.Store({
                     dispatch('getFollowersList', state.selectedUser.username)
                     dispatch('getFollowingList', state.selectedUser.username)
                     dispatch('followRelationship', true)
-                    if (state.whichPage === "Story") {
-                        dispatch('getStory')
-                    }
+                    // if (state.whichPage === "Story") {
+                    //     dispatch('getStory')
+                    // }
                 }).catch( function(result){
                     console.log(result)
 
-            });
+            })
         },
         getFollowersList: ({commit, state}, username) => {
             let apigClient = apigClientFactory.newClient({
                 invokeUrl: 'https://nz503vqz32.execute-api.us-west-2.amazonaws.com/dev',
                 apiKey: 'zNOgJkbJNb5sQFQzwJD077yjx2LxnEk25g7Z2Hd7',
                 region: 'us-west-2'
-            });
+            })
             let pathParams = {
                 username: username,
                 pagenum: state.followPaginate
-            };
+            }
             let pathTemplate = '/follows/followers/{username}/{pagenum}'
-            let method = 'GET';
+            let method = 'GET'
             let additionalParams = ""
             let body = ''
             apigClient.invokeApi(pathParams, pathTemplate, method, additionalParams, body)
                 .then(function(result){
-                    commit('setFollowers', result.data)
+                    commit('setFollowers', result.data.userList)
+                    if (result.data.end) {
+                        state.isEnd = true
+                    }
+                    else {
+                        state.isEnd = false
+                    }
                 }).catch( function(result){
                 console.log(result)
-            });
+            })
         },
         getFollowingList: ({commit, state}, username) => {
             let apigClient = apigClientFactory.newClient({
@@ -329,7 +330,13 @@ export const store = new Vuex.Store({
             let body = ''
             apigClient.invokeApi(pathParams, pathTemplate, method, additionalParams, body)
                 .then(function(result){
-                    commit('setFollowing', result.data)
+                    commit('setFollowing', result.data.userList)
+                    if (result.data.end) {
+                        state.isEnd = true
+                    }
+                    else {
+                        state.isEnd = false
+                    }
                 }).catch( function(result){
                 console.log(result)
             })
@@ -341,7 +348,7 @@ export const store = new Vuex.Store({
                 region: 'us-west-2'
             })
             let pathParams = {
-                username: state.currentUser.username,
+                username: state.username,
                 pagenum: state.feedPaginate
             }
             let pathTemplate = '/status/feed/{username}/{pagenum}'
@@ -350,7 +357,13 @@ export const store = new Vuex.Store({
             let body = ''
             apigClient.invokeApi(pathParams, pathTemplate, method, additionalParams, body)
                 .then(function(result){
-                    commit('setAllStatuses', result.data)
+                    commit('setAllStatuses', result.data.statuses)
+                    if (result.data.end) {
+                        state.isEnd = true
+                    }
+                    else {
+                        state.isEnd = false
+                    }
                 }).catch( function(result){
                 console.log(result)
             })
@@ -371,7 +384,13 @@ export const store = new Vuex.Store({
             let body = ''
             apigClient.invokeApi(pathParams, pathTemplate, method, additionalParams, body)
                 .then(function(result){
-                    commit('setAllStatuses', result.data)
+                    commit('setAllStatuses', result.data.statuses)
+                    if (result.data.end) {
+                        state.isEnd = true
+                    }
+                    else {
+                        state.isEnd = false
+                    }
                 }).catch( function(result){
                 console.log(result)
             })
@@ -392,33 +411,39 @@ export const store = new Vuex.Store({
             let body = ''
             apigClient.invokeApi(pathParams, pathTemplate, method, additionalParams, body)
                 .then(function(result){
-                    commit('setAllStatuses', result.data)
+                    commit('setAllStatuses', result.data.statuses)
+                    if (result.data.end) {
+                        state.isEnd = true
+                    }
+                    else {
+                        state.isEnd = false
+                    }
                 }).catch( function(result){
                 console.log(result)
             })
         },
-        changePhoto: ({commit, state}, photo) => {
-            let apigClient = apigClientFactory.newClient({
-                invokeUrl: 'https://nz503vqz32.execute-api.us-west-2.amazonaws.com/dev',
-                apiKey: 'zNOgJkbJNb5sQFQzwJD077yjx2LxnEk25g7Z2Hd7',
-                region: 'us-west-2'
-            })
-            let pathParams = {
-                username: state.currentUser.username,
-                photo: photo
-            }
-            let pathTemplate = '/user/photo/{username}/{photo}'
-            let method = 'PUT'
-            let additionalParams = ""
-            let body = ''
-            apigClient.invokeApi(pathParams, pathTemplate, method, additionalParams, body)
-                .then(function(result){
-                    console.log(result)
-                    state.currentUser.photo = photo
-                }).catch( function(result){
-                console.log(result)
-            })
-
-        }
+        // changePhoto: ({commit, state}, photo) => {
+        //     let apigClient = apigClientFactory.newClient({
+        //         invokeUrl: 'https://nz503vqz32.execute-api.us-west-2.amazonaws.com/dev',
+        //         apiKey: 'zNOgJkbJNb5sQFQzwJD077yjx2LxnEk25g7Z2Hd7',
+        //         region: 'us-west-2'
+        //     })
+        //     let pathParams = {
+        //         username: state.currentUser.username,
+        //         photo: photo
+        //     }
+        //     let pathTemplate = '/user/photo/{username}/{photo}'
+        //     let method = 'PUT'
+        //     let additionalParams = ""
+        //     let body = ''
+        //     apigClient.invokeApi(pathParams, pathTemplate, method, additionalParams, body)
+        //         .then(function(result){
+        //             console.log(result)
+        //             state.currentUser.photo = photo
+        //         }).catch( function(result){
+        //         console.log(result)
+        //     })
+        //
+        // }
     }
 });
