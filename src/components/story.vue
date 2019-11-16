@@ -18,8 +18,8 @@
                 <h1 style="font-size: 60px;"> {{selectedUser.name}}</h1>
                 <div style="font-size: 20px; padding-left: 15px;"> @{{selectedUser.username}}</div>
                 <div style="display: flex;">
-                    <div style="padding-left: 15px; padding-top: 3px; font-style: italic" class="cp" @click="viewFollowing()"> {{follows.length === 1 ? 2 : follows.length}} following </div>
-                    <div style="padding-left: 15px; padding-top: 3px; font-style: italic" class="cp" @click="viewFollowers()"> {{followedBy.length === 1? 2 : followedBy.length}} followers </div>
+                    <div style="padding-left: 15px; padding-top: 3px; font-style: italic" class="cp" @click="viewFollowing()"> following </div>
+                    <div style="padding-left: 15px; padding-top: 3px; font-style: italic" class="cp" @click="viewFollowers()"> followers </div>
                     <v-btn v-if="!isSelf() && loggedIn" style="margin-left: 15px; color: white;" color="#2196F3" rounded @click="follow()"> {{followText()}} </v-btn>
                 </div>
             </div>
@@ -49,8 +49,8 @@
                 addNew: false,
                 followObj: {},
                 loadKey: 0,
-                lkey: 0,
-                pkey: 0
+                lkey: 100,
+                pkey: 200
             }
         },
         watch: {
@@ -77,19 +77,7 @@
                 return this.$store.state.showFollow
             },
             statuses() {
-                // let statusList = []
-                return this.$store.state.allStatuses
-                // if (statuses) {
-                //     for (let i = 0; i < statuses.length; i++) {
-                //         if (statuses[i].username === this.selectedUser.username) {
-                //             statusList.push(statuses[i])
-                //         }
-                //     }
-                //     statusList = statusList.sort(function (a, b) {
-                //         return a.timeStamp > b.timeStamp
-                //     }).reverse()
-                //     return statusList
-                // }
+                return this.$store.state.storyList
             },
             loggedIn() {
                 return this.$store.state.loggedIn
@@ -106,14 +94,6 @@
         },
         methods: {
             followText() {
-                // if (this.currentUser.follows) {
-                //     for (let i = 0; i < this.currentUser.follows.length; i++) {
-                //         if (this.currentUser.follows[i].username === this.selectedUser.username) {
-                //             return "Unfollow"
-                //         }
-                //     }
-                // }
-                // return "Follow"
                 if (this.followRelationship) {  //uncomment when databse is updated
                     return "Unfollow"
                 }
@@ -121,7 +101,6 @@
             },
             isSelf() {
                 return this.selectedUser.username === this.currentUser.username
-                //return false
             },
             follow() {
                 if (this.followText() === "Unfollow") {
@@ -192,6 +171,7 @@
             }
         },
         mounted() {
+            this.$store.commit('setStoryPaginate', 0)
             this.$store.dispatch('getStory')
         }
     }

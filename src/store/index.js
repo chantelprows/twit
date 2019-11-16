@@ -19,17 +19,21 @@ export const store = new Vuex.Store({
         follows: [],
         followedBy: [],
         hasRelationship: false,
-        feedPaginate: 1,
-        storyPaginate: 1,
-        hashPaginate: 1,
+        feedPaginate: 0,
+        storyPaginate: 0,
+        hashPaginate: 0,
         loggingIn: false,
-        allStatuses: [],
-        followPaginate: 1,
-        isEnd: false
-    },
-
-    getters: {
-
+        followerPaginate: 0,
+        followingPaginate: 0,
+        feedEnd: false,
+        followingEnd: false,
+        followersEnd: false,
+        storyEnd: false,
+        hashtagEnd: false,
+        hashtagList: [],
+        storyList: [],
+        feedList: [],
+        switching: false
     },
 
     mutations: {
@@ -49,20 +53,23 @@ export const store = new Vuex.Store({
             state.selectedUser = obj
         },
         setFollowers: (state, arr) => {
-            for (let i = 0; i < arr.length; i++) {
-                // if (state.selectedUser) {
-                //     state.selectedUser.followedBy.push(arr[i])
-                // }
-                state.followedBy.push(arr[i])
+            if (!arr) {
+                state.followedBy = []
+            }
+            else {
+                for (let i = 0; i < arr.length; i++) {
+                    state.followedBy.push(arr[i])
+                }
             }
         },
         setFollowing: (state, arr) => {
-
-            for (let i = 0; i < arr.length; i++) {
-                // if (state.selectedUser) {
-                //     state.selectedUser.follows.push(arr[i])
-                // }
-                state.follows.push(arr[i])
+            if (!arr) {
+                state.follows = []
+            }
+            else {
+                for (let i = 0; i < arr.length; i++) {
+                    state.follows.push(arr[i])
+                }
             }
         },
         setLoginErr: (state, bool) => {
@@ -77,34 +84,99 @@ export const store = new Vuex.Store({
         setSelectedHashtag: (state, str) => {
             state.selectedHashtag = str
         },
-        setAllStatuses: (state, arr) => {
-            for (let i = 0; i < arr.length; i++) {
-                state.allStatuses.push(arr[i])
-            }
-            // state.allStatuses = arr
-        },
         setHasRelationship: (state, bool) =>  {
             state.hasRelationship = bool
         },
-        setFeedPaginate: (state) => {
-            state.feedPaginate++
+        setFeedPaginate: (state, num) => {
+            if (num === 0) {
+                state.feedPaginate = 0
+            }
+            else {
+                state.feedPaginate++
+            }
         },
-        setStoryPaginate: (state) => {
-            state.storyPaginate++
+        setStoryPaginate: (state, num) => {
+            if (num === 0) {
+                state.storyPaginate = num
+            }
+            else {
+                state.storyPaginate++
+            }
         },
-        setHashPaginate: (state) => {
-            state.hashPaginate++
+        setHashPaginate: (state, num) => {
+            if (num === 0) {
+                state.hashPaginate = num
+            }
+            else {
+                state.hashPaginate++
+            }
         },
         setLoggingIn: (state, bool) => {
             state.loggingIn = bool
         },
-        setFollowPaginate: (state, num) => {
-            if (num) {
-                state.followPaginate = num
+        setFollowingPaginate: (state, num) => {
+            if (num === 0) {
+                state.followingPaginate = num
             }
             else {
-                state.followPaginate++
+                state.followingPaginate++
             }
+        },
+        setFollowerPaginate: (state, num) => {
+            if (num === 0) {
+                state.followerPaginate = num
+            }
+            else {
+                state.followerPaginate++
+            }
+        },
+        setStoryList: (state, arr) => {
+            if (!arr) {
+                state.storyList = []
+            }
+            else {
+                for (let i = 0; i < arr.length; i++) {
+                    state.storyList.push(arr[i])
+                }
+            }
+        },
+        setFeedList: (state, arr) => {
+            if (!arr) {
+                state.feedList = []
+            }
+            else {
+                for (let i = 0; i < arr.length; i++) {
+                    state.feedList.push(arr[i])
+                }
+            }
+        },
+        setHashtagList: (state, arr) => {
+            if (!arr) {
+                state.hashtagList = []
+            }
+            else {
+                for (let i = 0; i < arr.length; i++) {
+                    state.hashtagList.push(arr[i])
+                }
+            }
+        },
+        setFeedEnd: (state, bool) => {
+            state.feedEnd = bool
+        },
+        setFollowingEnd: (state, bool) => {
+            state.followingEnd = bool
+        },
+        setFollowersEnd: (state, bool) => {
+            state.followersEnd = bool
+        },
+        setStoryEnd: (state, bool) => {
+            state.storyEnd = bool
+        },
+        setHashtagEnd: (state, bool) => {
+            state.hashtagEnd = bool
+        },
+        setSwitching: (state, bool) => {
+            state.switching = bool
         }
     },
 
@@ -113,6 +185,7 @@ export const store = new Vuex.Store({
             commit('setLoggingIn', true)
             commit('setLoggedIn', true)
             dispatch('getUser', state.username)
+            commit('setFeedPaginate', 0)
             commit('setWhichPage', 'Feed')
             commit('setLoginErr', false)
             commit('setCurrentUser', state.selectedUser)
@@ -157,12 +230,7 @@ export const store = new Vuex.Store({
             let body = ''
             apigClient.invokeApi(pathParams, pathTemplate, method, additionalParams, body)
                 .then(function(result){
-                    for (let j = 0; j < state.selectedUser.followedBy.length; j++) {
-                        if (state.selectedUser.followedBy[j].username === state.currentUser.username) {
-                            state.selectedUser.followedBy.splice(j, 1)
-                        }
-                    }
-
+                    state.followedBy.splice(j, 1)
                     dispatch('followRelationship', false)
                 }).catch( function(result){
                 console.log(result)
@@ -184,8 +252,7 @@ export const store = new Vuex.Store({
             let body = ''
             apigClient.invokeApi(pathParams, pathTemplate, method, additionalParams, body)
                 .then(function(result){
-                    state.currentUser.follows.push(state.selectedUser)
-                    state.selectedUser.followedBy.push(state.currentUser)
+                    state.follows.push(state.selectedUser)
                     dispatch('followRelationship', true)
 
                 }).catch( function(result){
@@ -227,7 +294,7 @@ export const store = new Vuex.Store({
 
             apigClient.invokeApi(pathParams, pathTemplate, method, additionalParams, obj)
                 .then(function(result){
-                    state.allStatuses.unshift(obj)
+                    state.storyList.unshift(obj)
                 }).catch( function(result){
                 console.log(result)
             })
@@ -257,6 +324,11 @@ export const store = new Vuex.Store({
         //     })
         // },
         getUser: ({commit, dispatch, state}, username) => {
+            let skip = false
+            if (state.whichPage === "Feed" || state.switching) {
+                skip = true
+                commit('setSwitching', false)
+            }
             let apigClient = apigClientFactory.newClient({
                 invokeUrl: 'https://nz503vqz32.execute-api.us-west-2.amazonaws.com/dev',
                 apiKey: 'zNOgJkbJNb5sQFQzwJD077yjx2LxnEk25g7Z2Hd7',
@@ -276,12 +348,18 @@ export const store = new Vuex.Store({
                         commit('setCurrentUser', result.data.output)
                         commit('setLoggingIn', false)
                     }
+                    commit('setFollowing', false)
+                    commit('setFollowingPaginate', 0)
+                    commit('setFollowers', false)
+                    commit('setFollowerPaginate', 0)
                     dispatch('getFollowersList', state.selectedUser.username)
                     dispatch('getFollowingList', state.selectedUser.username)
                     dispatch('followRelationship', true)
-                    // if (state.whichPage === "Story") {
-                    //     dispatch('getStory')
-                    // }
+                    if (state.whichPage === "Story" && state.storyList.length < 1 && !skip) {
+                        commit('setStoryList', false)
+                        commit('setStoryPaginate', 0)
+                        dispatch('getStory')
+                    }
                 }).catch( function(result){
                     console.log(result)
 
@@ -295,7 +373,7 @@ export const store = new Vuex.Store({
             })
             let pathParams = {
                 username: username,
-                pagenum: state.followPaginate
+                pagenum: state.followerPaginate
             }
             let pathTemplate = '/follows/followers/{username}/{pagenum}'
             let method = 'GET'
@@ -305,10 +383,10 @@ export const store = new Vuex.Store({
                 .then(function(result){
                     commit('setFollowers', result.data.userList)
                     if (result.data.end) {
-                        state.isEnd = true
+                        commit('setFollowersEnd', true)
                     }
                     else {
-                        state.isEnd = false
+                        commit('setFollowersEnd', false)
                     }
                 }).catch( function(result){
                 console.log(result)
@@ -322,7 +400,7 @@ export const store = new Vuex.Store({
             })
             let pathParams = {
                 username: username,
-                pagenum: state.followPaginate
+                pagenum: state.followingPaginate
             }
             let pathTemplate = '/follows/following/{username}/{pagenum}'
             let method = 'GET'
@@ -332,10 +410,10 @@ export const store = new Vuex.Store({
                 .then(function(result){
                     commit('setFollowing', result.data.userList)
                     if (result.data.end) {
-                        state.isEnd = true
+                        commit('setFollowingEnd', true)
                     }
                     else {
-                        state.isEnd = false
+                        commit('setFollowingEnd', false)
                     }
                 }).catch( function(result){
                 console.log(result)
@@ -357,12 +435,12 @@ export const store = new Vuex.Store({
             let body = ''
             apigClient.invokeApi(pathParams, pathTemplate, method, additionalParams, body)
                 .then(function(result){
-                    commit('setAllStatuses', result.data.statuses)
+                    commit('setFeedList', result.data.statuses)
                     if (result.data.end) {
-                        state.isEnd = true
+                        commit('setFeedEnd', true)
                     }
                     else {
-                        state.isEnd = false
+                        commit('setFeedEnd', false)
                     }
                 }).catch( function(result){
                 console.log(result)
@@ -384,12 +462,12 @@ export const store = new Vuex.Store({
             let body = ''
             apigClient.invokeApi(pathParams, pathTemplate, method, additionalParams, body)
                 .then(function(result){
-                    commit('setAllStatuses', result.data.statuses)
+                    commit('setStoryList', result.data.statuses)
                     if (result.data.end) {
-                        state.isEnd = true
+                        commit('setStoryEnd', true)
                     }
                     else {
-                        state.isEnd = false
+                        commit('setStoryEnd', false)
                     }
                 }).catch( function(result){
                 console.log(result)
@@ -411,12 +489,12 @@ export const store = new Vuex.Store({
             let body = ''
             apigClient.invokeApi(pathParams, pathTemplate, method, additionalParams, body)
                 .then(function(result){
-                    commit('setAllStatuses', result.data.statuses)
+                    commit('setHashtagList', result.data.statuses)
                     if (result.data.end) {
-                        state.isEnd = true
+                        commit('setHashtagEnd', true)
                     }
                     else {
-                        state.isEnd = false
+                        commit('setHashtagEnd', false)
                     }
                 }).catch( function(result){
                 console.log(result)

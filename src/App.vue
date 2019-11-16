@@ -77,10 +77,22 @@
         this.$store.commit('setLoginErr', false)
         this.$store.commit('setWhichPage', str)
         if (str === 'Story') {
+          this.$store.commit('setSwitching', true)
+          this.$store.commit('setStoryList', false)
+          this.$store.commit('setFollowers', false)
+          this.$store.commit('setFollowing', false)
+          this.$store.commit('setStoryPaginate', 0)
+          this.$store.commit('setFollowingPaginate')
+          this.$store.commit('setFollowerPaginate')
           this.$store.dispatch('getUser', this.$store.state.currentUser.username)
         }
         if (str === 'Explore') {
-          this.$store.commit('setAllStatuses', [])
+          this.$store.commit('setHashPaginate', 0)
+          this.$store.commit('setHashtagList', false)
+        }
+        if (str === 'Feed') {
+          this.$store.commit('setFeedList', false)
+          this.$store.commit('setFeedPaginate', 0)
         }
       },
       logout() {
@@ -88,6 +100,16 @@
           this.setPage("Login")
           this.$store.commit('setCurrentUser', {})
           this.$store.commit('setLoggedIn', false)
+          this.$store.commit('setStoryPaginate', 0)
+          this.$store.commit('setFeedPaginate', 0)
+          this.$store.commit('setHashPaginate', 0)
+          this.$store.commit('setFeedList', false)
+          this.$store.commit('setHashtagList', false)
+          this.$store.commit('setStoryList', false)
+          this.$store.commit('setFollowingPaginate', 0)
+          this.$store.commit('setFollowerPaginate', 0)
+          this.$store.commit('setFollowers', false)
+          this.$store.commit('setFollowing', false)
         })
       }
     },

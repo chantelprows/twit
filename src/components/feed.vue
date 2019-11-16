@@ -32,10 +32,12 @@
                 //         return a.timeStamp > b.timeStamp
                 //     }).reverse()
                 // }
-                return this.$store.state.allStatuses
+                return this.$store.state.feedList
             }
         },
         async mounted() {
+            this.$store.commit('setFeedList', false)
+            this.$store.commit('setFeedPaginate', 0)
             await this.$store.dispatch('getFeed')
         }
     }

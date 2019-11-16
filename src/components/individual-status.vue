@@ -55,6 +55,9 @@
                 //     }
                 // }
                 this.$store.dispatch('getUser', username)
+                this.$store.commit('setStoryPaginate', 0)
+                this.$store.commit('setFollowingPaginate', 0)
+                this.$store.commit('setFollowerPaginate', 0)
                 this.$store.commit('setWhichPage', "Story")
                 this.$store.commit('setShowStatus', false)
             },
@@ -89,19 +92,21 @@
             },
             goToHashtag(hashtag) {
                 let cut = hashtag.substr(2)
-                // this.$store.commit('setSelectedHashtag', cut)
+                this.$store.commit('setHashtagList', false)
+                this.$store.commit('setHashPaginate', 0)
                 this.$store.dispatch('getHashtags', cut)
                 this.$store.commit('setShowStatus', false)
                 this.$store.commit('setWhichPage', 'Explore')
             },
             goToStory(mention) {
                 let cut = mention.substr(2)
-                // for (let i = 0; i < this.allUsers.length; i++) {
-                //     if (cut === this.allUsers[i].username) {
-                //         this.$store.commit("setSelectedUser", this.allUsers[i])
-                //     }
-                // }
                 this.$store.dispatch('getUser', cut)
+                this.$store.commit('setStoryList', false)
+                this.$store.commit('setFollowers', false)
+                this.$store.commit('setFollowing', false)
+                this.$store.commit('setStoryPaginate', 0)
+                this.$store.commit('setFollowingPaginate', 0)
+                this.$store.commit('setFollowerPaginate', 0)
                 this.$store.commit('setWhichPage', "Story")
             }
         },

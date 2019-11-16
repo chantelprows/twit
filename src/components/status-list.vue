@@ -23,7 +23,7 @@
             </div>
         </div>
         <br>
-        <div v-if="!isEnd">
+        <div v-if="!isEnd()">
             <v-btn color="#2196F3" style="color: white;" @click="loadMore()"> Load More </v-btn>
         </div>
         <br>
@@ -49,17 +49,7 @@
             }
         },
         computed: {
-            isEnd() {
-                return this.$store.state.isEnd
-            },
             statusList() {
-                // if (this.config.length > this.pageNum) {
-                //     return this.config.slice(0, this.pageNum)
-                // }
-                // else {
-                //     this.pageNum = this.config.length
-                //     return this.config
-                // }
                 return this.config
             },
             allUsers() {
@@ -81,22 +71,14 @@
             //     this.$store.dispatch('deleteStatus', status)
             // },
             changeUser(username) {
-                // for (let i = 0; i < this.allUsers.length; i++) {
-                //     if (username === this.allUsers[i].username) {
-                //         this.$store.commit('setSelectedUser', this.allUsers[i])
-                //     }
-                // }
                 this.$store.dispatch('getUser', username)
+                this.$store.commit('setStoryPaginate', 0)
+                this.$store.commit('setFollowingPaginate', 0)
+                this.$store.commit('setFollowerPaginate', 0)
                 this.$store.commit('setWhichPage', "Story")
                 this.$store.commit('setShowStatus', false)
             },
             loadMore() {
-                // if (this.pageNum + 5 > this.config.length) {
-                //     this.pageNum = this.config.length
-                // }
-                // else {
-                //     this.pageNum = this.pageNum + 5
-                // }
                 if (this.$store.state.whichPage === "Feed") {
                     this.$store.commit('setFeedPaginate')
                     this.$store.dispatch('getFeed')
@@ -110,20 +92,33 @@
                     this.$store.dispatch('getHashtags')
                 }
             },
+            isEnd() {
+                if (this.$store.state.whichPage === "Feed") {
+                    return this.$store.state.feedEnd
+                }
+                else if (this.$store.state.whichPage === "Story") {
+                    return this.$store.state.storyEnd
+                }
+                else {
+                    return this.$store.state.hashtagEnd
+                }
+            },
             async goToHashtag(hashtag) {
                 let cut = hashtag.substr(2)
-                // this.$store.commit('setSelectedHashtag', cut)
+                this.$store.commit('setHashtagList', false)
+                this.$store.commit('setHashPaginate', 0)
                 await this.$store.dispatch('getHashtags', cut)
                 this.$store.commit('setWhichPage', 'Explore')
             },
             async goToStory(mention) {
                 let cut = mention.substr(2)
-                // for (let i = 0; i < this.allUsers.length; i++) {
-                //     if (cut === this.allUsers[i].username) {
-                //         this.$store.commit("setSelectedUser", this.allUsers[i])
-                //     }
-                // }
                 await this.$store.dispatch('getUser', cut)
+                this.$store.commit('setStoryList', false)
+                this.$store.commit('setFollowers', false)
+                this.$store.commit('setFollowing', false)
+                this.$store.commit('setStoryPaginate', 0)
+                this.$store.commit('setFollowingPaginate', 0)
+                this.$store.commit('setFollowerPaginate', 0)
                 this.$store.commit('setWhichPage', "Story")
             },
             formatHtml(status) {
