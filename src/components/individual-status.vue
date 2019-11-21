@@ -17,7 +17,10 @@
                 <br>
                 <div style="padding-left: 20px;" v-html="formatHtml(status.status)" ref="indStat"></div>
                 <br>
-                <img v-if="status.attachment" :src="status.attachment" style="width: 200px; height: auto; margin-left: 20px;">
+                <div v-if="status.attachment">
+                    <img v-if="status.type === 'Photo'" :src="status.attachment" style="width: 200px; height: auto; margin-left: 20px;">
+                    <video v-else :src="status.attachment" controls style="width: 200px; height: auto; margin-left: 20px;"></video>
+                </div>
                 <br><br v-if="status.attachment">
                 <v-btn color="#2196F3" style="color: white; margin-left: 20px; margin-bottom: 10px;" @click="close()"> Close </v-btn>
             </v-card>
@@ -54,12 +57,15 @@
                 //         this.$store.commit('setSelectedUser', this.allUsers[i])
                 //     }
                 // }
-                this.$store.dispatch('getUser', username)
+                this.$store.commit('setStoryList', false)
+                this.$store.commit('setFollowers', false)
+                this.$store.commit('setFollowing', false)
                 this.$store.commit('setStoryPaginate', 0)
                 this.$store.commit('setFollowingPaginate', 0)
                 this.$store.commit('setFollowerPaginate', 0)
                 this.$store.commit('setWhichPage', "Story")
                 this.$store.commit('setShowStatus', false)
+                this.$store.dispatch('getUser', username)
             },
             formatHtml(status) {
                 let innerHTML = '<div>'
@@ -92,15 +98,15 @@
             },
             goToHashtag(hashtag) {
                 let cut = hashtag.substr(2)
+                this.$store.commit('setSelectedHashtag', cut)
                 this.$store.commit('setHashtagList', false)
                 this.$store.commit('setHashPaginate', 0)
-                this.$store.dispatch('getHashtags', cut)
+                this.$store.dispatch('getHashtags')
                 this.$store.commit('setShowStatus', false)
                 this.$store.commit('setWhichPage', 'Explore')
             },
             goToStory(mention) {
                 let cut = mention.substr(2)
-                this.$store.dispatch('getUser', cut)
                 this.$store.commit('setStoryList', false)
                 this.$store.commit('setFollowers', false)
                 this.$store.commit('setFollowing', false)
@@ -108,6 +114,7 @@
                 this.$store.commit('setFollowingPaginate', 0)
                 this.$store.commit('setFollowerPaginate', 0)
                 this.$store.commit('setWhichPage', "Story")
+                this.$store.dispatch('getUser', cut)
             }
         },
         mounted() {

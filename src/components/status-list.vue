@@ -16,7 +16,8 @@
                         <div @click="viewStatus(status)" style="height: 10px; width: 100%; cursor: pointer;"></div>
                         <div v-if="status.attachment" @click="viewStatus(status)" style="cursor: pointer;">
                             <br>
-                            <img :src="status.attachment" style="width: 100px; height: auto; margin-right: 10px;">
+                            <img v-if="status.type === 'Photo'" :src="status.attachment" style="width: 100px; height: auto; margin-right: 10px;">
+                            <video v-else :src="status.attachment" controls style="width: 100px; height: auto; margin-right: 10px;"></video>
                         </div>
                     </div>
                 </div>
@@ -71,12 +72,15 @@
             //     this.$store.dispatch('deleteStatus', status)
             // },
             changeUser(username) {
-                this.$store.dispatch('getUser', username)
+                this.$store.commit('setStoryList', false)
+                this.$store.commit('setFollowers', false)
+                this.$store.commit('setFollowing', false)
                 this.$store.commit('setStoryPaginate', 0)
                 this.$store.commit('setFollowingPaginate', 0)
                 this.$store.commit('setFollowerPaginate', 0)
                 this.$store.commit('setWhichPage', "Story")
                 this.$store.commit('setShowStatus', false)
+                this.$store.dispatch('getUser', username)
             },
             loadMore() {
                 if (this.$store.state.whichPage === "Feed") {
@@ -105,14 +109,14 @@
             },
             async goToHashtag(hashtag) {
                 let cut = hashtag.substr(2)
+                this.$store.commit('setSelectedHashtag', cut)
                 this.$store.commit('setHashtagList', false)
                 this.$store.commit('setHashPaginate', 0)
-                await this.$store.dispatch('getHashtags', cut)
+                await this.$store.dispatch('getHashtags')
                 this.$store.commit('setWhichPage', 'Explore')
             },
             async goToStory(mention) {
                 let cut = mention.substr(2)
-                await this.$store.dispatch('getUser', cut)
                 this.$store.commit('setStoryList', false)
                 this.$store.commit('setFollowers', false)
                 this.$store.commit('setFollowing', false)
@@ -120,6 +124,7 @@
                 this.$store.commit('setFollowingPaginate', 0)
                 this.$store.commit('setFollowerPaginate', 0)
                 this.$store.commit('setWhichPage', "Story")
+                await this.$store.dispatch('getUser', cut)
             },
             formatHtml(status) {
                 let innerHTML = '<div>'

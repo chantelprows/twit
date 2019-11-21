@@ -82,8 +82,8 @@
           this.$store.commit('setFollowers', false)
           this.$store.commit('setFollowing', false)
           this.$store.commit('setStoryPaginate', 0)
-          this.$store.commit('setFollowingPaginate')
-          this.$store.commit('setFollowerPaginate')
+          this.$store.commit('setFollowingPaginate', 0)
+          this.$store.commit('setFollowerPaginate', 0)
           this.$store.dispatch('getUser', this.$store.state.currentUser.username)
         }
         if (str === 'Explore') {

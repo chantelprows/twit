@@ -2,7 +2,7 @@
     <section style="padding-left: 20px; padding-top: 20px;">
         <div style="display: inline-flex;">
             <div style="display: block">
-                <v-img :key="pkey" :src="selectedUser.photo" height="120" width="120" style="margin-top: 20px;"></v-img>
+                <v-img :key="pkey" :src="selectedUser.photo + '?c=' + rand" height="120" width="120" style="margin-top: 20px;"></v-img>
                 <div v-if="currentUser.username === selectedUser.username" style="font-style: italic;" class="cp" @click="addNew = true"> Change Picture </div>
                 <v-file-input
                         label="Profile Photo"
@@ -50,7 +50,8 @@
                 followObj: {},
                 loadKey: 0,
                 lkey: 100,
-                pkey: 200
+                pkey: 200,
+                rand: 'ydjbad'
             }
         },
         watch: {
@@ -152,6 +153,7 @@
                 }
                 // this.$store.dispatch('changePhoto', URL.toDataURL(this.picture))
                 this.picture = null
+                this.rand =  Math.random().toString(36).substring(7)
             },
             // urlGet() {
             //     if (this.selectedUser.photo) {
@@ -171,8 +173,8 @@
             }
         },
         mounted() {
-            this.$store.commit('setStoryPaginate', 0)
-            this.$store.dispatch('getStory')
+            // this.$store.commit('setStoryPaginate', 0)
+            // this.$store.dispatch('getStory')
         }
     }
 </script>

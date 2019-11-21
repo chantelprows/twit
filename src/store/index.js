@@ -184,9 +184,9 @@ export const store = new Vuex.Store({
         fetchLogin: async ({commit, dispatch, state}) => {
             commit('setLoggingIn', true)
             commit('setLoggedIn', true)
-            dispatch('getUser', state.username)
             commit('setFeedPaginate', 0)
             commit('setWhichPage', 'Feed')
+            dispatch('getUser', state.username)
             commit('setLoginErr', false)
             commit('setCurrentUser', state.selectedUser)
         },
@@ -229,9 +229,8 @@ export const store = new Vuex.Store({
             let additionalParams = ""
             let body = ''
             apigClient.invokeApi(pathParams, pathTemplate, method, additionalParams, body)
-                .then(function(result){
-                    state.followedBy.splice(j, 1)
-                    dispatch('followRelationship', false)
+                .then(function(result) {
+                    dispatch('followRelationship')
                 }).catch( function(result){
                 console.log(result)
             })
@@ -249,17 +248,21 @@ export const store = new Vuex.Store({
             let pathTemplate = '/follows/{follower}/{followee}'
             let method = 'POST'
             let additionalParams = ""
-            let body = ''
+            let body = {
+                followerName: state.currentUser.name,
+                followerPhoto: state.currentUser.photo,
+                followeeName: state.selectedUser.name,
+                followeePhoto: state.selectedUser.photo
+            }
             apigClient.invokeApi(pathParams, pathTemplate, method, additionalParams, body)
                 .then(function(result){
                     state.follows.push(state.selectedUser)
-                    dispatch('followRelationship', true)
-
+                    dispatch('followRelationship')
                 }).catch( function(result){
                 console.log(result)
             })
         },
-        followRelationship: ({commit, state}, bool) => {
+        followRelationship: ({commit, state}) => {
             let apigClient = apigClientFactory.newClient({
                 invokeUrl: 'https://nz503vqz32.execute-api.us-west-2.amazonaws.com/dev',
                 apiKey: 'zNOgJkbJNb5sQFQzwJD077yjx2LxnEk25g7Z2Hd7',
@@ -275,7 +278,7 @@ export const store = new Vuex.Store({
             let body = ''
             apigClient.invokeApi(pathParams, pathTemplate, method, additionalParams, body)
                 .then(function(result){
-                    commit('setHasRelationship', bool)
+                    commit('setHasRelationship', result.data)
                 }).catch( function(result){
                 console.log(result)
             })
@@ -325,7 +328,7 @@ export const store = new Vuex.Store({
         // },
         getUser: ({commit, dispatch, state}, username) => {
             let skip = false
-            if (state.whichPage === "Feed" || state.switching) {
+            if (state.switching) {
                 skip = true
                 commit('setSwitching', false)
             }
@@ -347,6 +350,7 @@ export const store = new Vuex.Store({
                     if (state.loggingIn) {
                         commit('setCurrentUser', result.data.output)
                         commit('setLoggingIn', false)
+                        skip = true
                     }
                     commit('setFollowing', false)
                     commit('setFollowingPaginate', 0)
@@ -354,8 +358,18 @@ export const store = new Vuex.Store({
                     commit('setFollowerPaginate', 0)
                     dispatch('getFollowersList', state.selectedUser.username)
                     dispatch('getFollowingList', state.selectedUser.username)
-                    dispatch('followRelationship', true)
+                    dispatch('followRelationship')
                     if (state.whichPage === "Story" && state.storyList.length < 1 && !skip) {
+                        commit('setStoryList', false)
+                        commit('setStoryPaginate', 0)
+                        dispatch('getStory')
+                    }
+                    else if (state.storyList.length < 1) {
+                        commit('setStoryList', false)
+                        commit('setStoryPaginate', 0)
+                        dispatch('getStory')
+                    }
+                    else if (state.whichPage === "Feed" && !skip) {
                         commit('setStoryList', false)
                         commit('setStoryPaginate', 0)
                         dispatch('getStory')
@@ -473,14 +487,14 @@ export const store = new Vuex.Store({
                 console.log(result)
             })
         },
-        getHashtags: ({commit, state}, hashtag) => {
+        getHashtags: ({commit, state}) => {
             let apigClient = apigClientFactory.newClient({
                 invokeUrl: 'https://nz503vqz32.execute-api.us-west-2.amazonaws.com/dev',
                 apiKey: 'zNOgJkbJNb5sQFQzwJD077yjx2LxnEk25g7Z2Hd7',
                 region: 'us-west-2'
             })
             let pathParams = {
-                hashtag: hashtag,
+                hashtag: state.selectedHashtag,
                 pagenum: state.hashPaginate
             }
             let pathTemplate = '/status/hashtag/{hashtag}/{pagenum}'

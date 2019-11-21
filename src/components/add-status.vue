@@ -14,23 +14,24 @@
             <v-icon @click="showInput = !showInput" large style="padding-bottom: 20px;"> mdi-paperclip </v-icon>
         </div>
 
-        <v-text-field
-                v-show="showInput"
-                label="URL"
-                prepend-inner-icon="mdi-paperclip"
-                v-model="attachment"
-                clearable
-                solo
-        >
-        </v-text-field>
-        <v-text-field
-                v-show="showInput"
-                label="Type (Photo or Video)"
-                v-model="type"
-                clearable
-                solo
-        >
-        </v-text-field>
+        <div v-show="showInput" style="display: flex;">
+            <v-select
+                    :items="['Photo', 'Video']"
+                    label="Type"
+                    v-model="type"
+                    solo
+                    style="width: 3px; margin-right: 20px;"
+            >
+            </v-select>
+            <v-text-field
+                    label="URL"
+                    prepend-inner-icon="mdi-paperclip"
+                    v-model="attachment"
+                    clearable
+                    solo
+            >
+            </v-text-field>
+        </div>
         <v-btn style="color: white;" color="#2196F3" @click="chirp()" :disabled="statusText === ''"> Chirp </v-btn>
     </section>
 </template>
