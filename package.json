@@ -11,7 +11,7 @@
     "@vue/cli-upgrade": "^3.11.0",
     "aws-api-client": "^1.1.0",
     "aws-api-gateway-client": "^0.2.17",
-    "aws-sdk": "^2.572.0",
+    "aws-sdk": "^2.814.0",
     "core-js": "^2.6.5",
     "firebase": "^7.2.3",
     "vue": "^2.6.10",
